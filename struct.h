@@ -6,10 +6,15 @@ union ast{
 	char* word;
 };
 
+typedef struct node {
+	ast content;
+	node* left;
+	node* right;
+}node;
+
 typedef struct commandes {
 	char* type;
-	ast* expr;
-	
+	node head;
 }commandes;
 
 #endif
