@@ -1,10 +1,15 @@
 #ifndef _STRUCT_H_
 #define _STRUCT_H_
 
-union ast{
+union ast_c {
+	int num;
+	char* word;
+};
+
+union ast_v {
 	int num;
 	char** word;
-};
+}
 
 typedef struct node {
 	ast content;
