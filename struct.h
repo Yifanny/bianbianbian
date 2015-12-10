@@ -11,15 +11,26 @@ union ast_v {
 	char** word;
 }
 
-typedef struct node {
-	ast content;
+typedef struct node_c {
+	ast_c content;
 	node* left;
 	node* right;
-}node;
+}node_c;
+
+typedef struct node_v {
+	ast_v content;
+	node* left;
+	node* right;
+}node_v;
 
 typedef struct commandes {
 	char* type;
-	node head;
+	node_c head;
 }commandes;
+
+typedef struct version {
+	char* type;
+	node_v head;
+}version;
 
 #endif
