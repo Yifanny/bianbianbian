@@ -3,7 +3,7 @@
 
 union ast{
 	int num;
-	char* word;
+	char** word;
 };
 
 typedef struct node {
