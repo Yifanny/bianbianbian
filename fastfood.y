@@ -8,6 +8,7 @@
 %token NUMBER
 %token INGREDIENT
 %token OPERATION
+%token SPLITE
 
 %left '+' '-'
 %left '*' '/'
