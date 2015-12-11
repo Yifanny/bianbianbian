@@ -1,11 +1,7 @@
 %{
 	#include <stdio.h>
-	#include "struct.h"
-	#define MAXSANDWA 100
-	int yylex(void);
-	void yyerror(char*);
-	commandes sandwhich[MAXSANDW];
-	version order;
+	#include "init.h"
+	
 %}
 
 %token TYPE

@@ -1,5 +1,6 @@
 #ifndef _STRUCT_H_
 #define _STRUCT_H_
+#define MAXSANDW 100
 
 union ast_c {
 	int num;
@@ -33,4 +34,11 @@ typedef struct version {
 	node_v head;
 }version;
 
+
+int yylex(void);
+void yyerror(char*);
+
+commandes sandwhich[MAXSANDW];
+version order[MAXSANDW];
+	
 #endif
