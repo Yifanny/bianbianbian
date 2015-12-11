@@ -1,5 +1,6 @@
 #include "init.h"
 
+int add
 
 int main() {
 	

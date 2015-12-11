@@ -1,7 +1,8 @@
 %{
 	#include <stdio.h>
 	#include "init.h"
-	
+	int yylex(void);
+	void yyerror(char*);
 %}
 
 %token TYPE
@@ -9,23 +10,61 @@
 %token INGREDIENT
 %token OPERATION
 %token SPLITE
+%token CONJUNCTION
 
 %left '+' '-'
 %left '*' '/'
 
 %%
-program:
-	program expr '/n' { 
-		printf("%d/n", $2); 
+condition:
+	simple SPLITE expr {
+	
+	}
+	| simple OPERATION expr {
+	
+	}
+	| simple expr {
+	
 	}
 ;
 
 expr:
-	| NUMBER TYPE '/n' {
+	expr SPLITE expr {
 	
 	}
-	| NUMBER TYPE expr 
+	| expr CONJUNCTION expr {
+	
+	}
+	| NUMBER OPERATION taste {
+	
+	}
+;
+
+taste:
+	INGREDIENT {
+	}
+	| taste OPERATION taste {
+	
+	}
+;
+
+simple:
+	NUMBER TYPE '/n' {
+	
+	}
+;
+
 %%
+
+int main(int argc, char ** argv) {
+
+	return 0;
+}
+
+void yyerror(char* s) {
+	fprintf(stderr, "%s\n", s);
+		
+}
 
 
 

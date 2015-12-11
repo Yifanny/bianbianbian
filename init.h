@@ -35,8 +35,7 @@ typedef struct version {
 }version;
 
 
-int yylex(void);
-void yyerror(char*);
+
 
 commandes sandwhich[MAXSANDW];
 version order[MAXSANDW];
