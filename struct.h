@@ -18,7 +18,7 @@ typedef struct node_c {
 }node_c;
 
 typedef struct node_v {
-	ast_v content;
+	union ast_v content;
 	struct node_v* left;
 	struct node_v* right;
 }node_v;
