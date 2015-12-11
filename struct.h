@@ -13,14 +13,14 @@ union ast_v {
 
 typedef struct node_c {
 	union ast_c content;
-	node_c* left;
-	node_c* right;
+	struct node_c* left;
+	struct node_c* right;
 }node_c;
 
 typedef struct node_v {
 	ast_v content;
-	node_v* left;
-	node_v* right;
+	struct node_v* left;
+	struct node_v* right;
 }node_v;
 
 typedef struct commandes {
