@@ -1,41 +1,45 @@
 #ifndef _STRUCT_H_
 #define _STRUCT_H_
 #define MAXSANDW 100
+#define MAXTYPE 100
 
-union ast_c {
+/***********************************************************/
+/* type for the node which represent different meaning     */
+/* in the syntax tree: 									   */
+/* 1: number                                               */
+/* 2: ingredient                                           */
+/* 3: operation                                            */
+/* 4: entity                                               */
+/* 5: conjunction                                          */
+/***********************************************************/
+int typenode[5] = {1, 2, 3, 4, 5};
+
+union ast {
 	int num;
 	char* word;
 };
 
-union ast_v {
-	int num;
-	char** word;
-};
-
-typedef struct node_c {
-	union ast_c content;
-	struct node_c* left;
-	struct node_c* right;
-}node_c;
-
-typedef struct node_v {
-	union ast_v content;
-	struct node_v* left;
-	struct node_v* right;
-}node_v;
+typedef struct node {
+	int typenode;
+	union ast content;
+	struct node* left;
+	struct node* right;
+}node;
 
 typedef struct commandes {
 	char* type;
-	node_c head;
+	node head;
 }commandes;
+
+typedef struct kind {
+	char* require;
+	int cnt;	
+}kind;
 
 typedef struct version {
 	char* type;
-	node_v head;
+	kind types[MAXTYPE];
 }version;
-
-
-
 
 commandes sandwhich[MAXSANDW];
 version order[MAXSANDW];
