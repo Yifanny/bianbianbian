@@ -9,18 +9,18 @@ union ast_c {
 union ast_v {
 	int num;
 	char** word;
-}
+};
 
 typedef struct node_c {
-	ast_c content;
-	node* left;
-	node* right;
+	union ast_c content;
+	node_c* left;
+	node_c* right;
 }node_c;
 
 typedef struct node_v {
 	ast_v content;
-	node* left;
-	node* right;
+	node_v* left;
+	node_v* right;
 }node_v;
 
 typedef struct commandes {
