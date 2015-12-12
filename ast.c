@@ -19,17 +19,73 @@ commandes create_commande(int num, char* type) {
 	return cmd;
 }
 
-node* create_ingredient(char* name) {
+node* create_ingredient(char* opr, char* name) {
 	node* p = malloc(sizeof(node));
 	if (p == NULL) {
 		yyerror("not enough memory!\n");
 	}
 	
-	p->typenode = 2;
-	p->content.word = name;
-	p->left = NULL;
+	p->typenode = 3;
+	p->content.word = opr;
+	
+	p->left = malloc(sizeof(node));
+	if (p->left == NULL) {
+		yyerror("not enough memory!\n");
+	}
+	p->left->typenode = 2;
+	p->left->content.word = name;
+	
 	p->right = NULL;
 	
 	return p;
 }
 
+
+node* create_ingredients(char* opr, char* name, node* in2) {
+	node* p = create_ingredient(opr, name);
+	p->right = in2;
+	
+	return p;
+}
+
+node* create_entity(int num, char* opr, node* in1) {
+	node* p = malloc(sizeof(node));
+	if (p == NULL) {
+		yyerror("not enough memory!\n");
+	}
+	
+	p->typenode = 4;
+	p->content.word = NULL;
+	p->left = malloc(sizeof(node));
+	if (p->left == NULL) {
+		yyerror("not enough memory!\n");
+	}
+	
+	p->left->typenode = 1;
+	p->left->content.num = num;
+	p->left->left = NULL;
+	p->left->right = NULL;
+	
+	p->right = in1;
+	
+	return p;
+ 
+}
+
+node* combine_entities(node* ent1, char* spl, node* ent2) {
+	node* p = malloc(sizeof(node));
+	if (p == NULL) {
+		yyerror("not enough memory!\n");
+	}
+	
+	p->typenode = 5;
+	p->content.word = spl;
+	p->left = ent1;
+	p->right = ent2;
+	
+	return p; 
+}
+
+ commandes add_requirement(commandes* cmd, char* opr, node* ent) {
+	 cmd->head.right = malloc(sizeof(node))
+ }

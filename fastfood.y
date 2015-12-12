@@ -32,33 +32,32 @@ program:
 		
 condition:
 	simple SPLITE expr {
-		
+		sandwich[count] = add_condition($1, $2, $3);
+		$$ = &sandwich[count];
 	}
 	| simple OPERATION expr {
-	
+		sandwich[count] = add_requirement($1, $2, $3);
+		$$ = &sandwich[count];
 	}
-	| simple expr {
-		
+	| simple {
+		printf("order finish\n");
 	}
 ;
 
 expr:
 	expr SPLITE expr {
-	
+		$$ = combine_entities($1, $2, $3);
 	}
-	| expr CONJUNCTION expr {
-	
-	}
-	| NUMBER OPERATION taste {
-	
+	| NUMBER taste {
+		$$ = create_entity($1, $2);
 	}
 ;
 
 taste:
-	INGREDIENT {
-		$$ = create_ingredient($1);
+	OPERATION INGREDIENT {
+		$$ = create_ingredient($1, $2);
 	}
-	| taste OPERATION taste {
+	| OPERATION INGREDIENT taste {
 		$$ = create_ingredients($1, $2, $3);
 	}
 ;
@@ -66,6 +65,7 @@ taste:
 simple:
 	NUMBER TYPE '/n' {
 		sandwich[count] = create_commande($1, $2);
+		$$ = &sandwich[count];
 	}
 ;
 

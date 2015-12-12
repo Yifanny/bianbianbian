@@ -9,10 +9,9 @@
 /* 1: number                                               */
 /* 2: ingredient                                           */
 /* 3: operation                                            */
-/* 4: entity                                               */
-/* 5: conjunction                                          */
+/* 4: entity                                               */                    */
 /***********************************************************/
-int typenode[5] = {1, 2, 3, 4, 5};
+int typenode[4] = {1, 2, 3, 4};
 
 union ast {
 	int num;
