@@ -81,6 +81,7 @@ void facture(commandes order[]){
 	printf("\nTotal:%.2f\n",total);
 }
 
+/*
 int main() {
 	union ast_c u1;
 	u1.word = NULL;
@@ -99,3 +100,4 @@ int main() {
 	facture(orders);
 	return 0;
 }
+*/
