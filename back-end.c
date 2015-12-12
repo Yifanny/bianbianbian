@@ -10,6 +10,8 @@
 #include<string.h>
 #include "init.h"
 
+extern count;
+
 struct price {
 	char* name;
 	float euro;
@@ -57,45 +59,19 @@ float InOrder(node_c* tree) {
 	return sum;
 }
 
-void facture(commandes order[]){
-	int num = 0;
-	int count = 0;
-	float total = 0.0;
-	while(count<sizeof(order)){
-		num = (order[count].head).left->content.num;
-		printf("\n%2d %10s",num,order[count].type);
+void facture(version* ver){
+	while(ver){
+		char* sandwich = *ver.type;
 		int i;
-		float sum1,sum2;
-		for(i = 0; i < 5; i++){
-			if(!strcmp(price_list[i].name,order[count].type)){
-				sum1 = num * price_list[i].euro;
-			}
+		kind reqs[count];
+		reqs = malloc(count * sizeof(kind));
+		for(i = 0; i < count; i++) {
+			reqs[i] = ver.types[i];
 		}
-		total = total + sum1;
-		printf("%.2f",sum1);
-		node_c* cur = order[count].head.right;
-		sum2 = InOrder(cur);
-		total = total + sum2;
-		count = count+1;	
+		printf("%2d",)
 	}
-	printf("\nTotal:%.2f\n",total);
 }
 
 int main() {
-	union ast_c u1;
-	u1.word = NULL;
-	union ast_c u2;
-	u2.num = 1;
-	node_c* number;
-	number->left = NULL;
-	number->right = NULL;
-	number->content = u2;
-	node_c tree = {
-		u1,number,NULL
-	};
-	commandes orders[1] = {
-		{"panini",tree}
-	};
-	facture(orders);
-	return 0;
+
 }
