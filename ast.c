@@ -4,7 +4,7 @@
 commandes create_commande(int num, char* type) {
 	commandes cmd;
 	cmd.type = type;
-	cmd.head.typenode = 4;
+	cmd.head.typenode = 0;
 	cmd.head.content.word = NULL;
 	cmd.head.left = malloc(sizeof(node));
 	if (cmd.head.left = NULL) {
@@ -48,7 +48,7 @@ node* create_ingredients(char* opr, char* name, node* in2) {
 	return p;
 }
 
-node* create_entity(int num, char* opr, node* in1) {
+node* create_entity(int num, node* in1) {
 	node* p = malloc(sizeof(node));
 	if (p == NULL) {
 		yyerror("not enough memory!\n");
@@ -78,7 +78,7 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 		yyerror("not enough memory!\n");
 	}
 	
-	p->typenode = 5;
+	p->typenode = 0;
 	p->content.word = spl;
 	p->left = ent1;
 	p->right = ent2;
@@ -86,6 +86,16 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	return p; 
 }
 
- commandes add_requirement(commandes* cmd, char* opr, node* ent) {
-	 cmd->head.right = malloc(sizeof(node))
+ commandes add_requirement(commandes* cmd, node* req) {
+	 cmd->head.right = req;
+	 
+	 return *cmd;
+	 
+ }
+ 
+ commandes add_condition(commandes* cmd, char* spl, node* cons) {
+	 cmd->head.content.word = spl;
+	 cmd->head.right = cons;
+	 
+	 return cmd;
  }

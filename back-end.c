@@ -72,6 +72,8 @@ void facture(version* ver){
 	}
 }
 
+/*
 int main() {
 
 }
+*/
