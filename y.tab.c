@@ -433,8 +433,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    41,    41,    44,    51,    55,    59,    66,    69,    72,
-      78,    81,    87
+       0,    41,    41,    44,    52,    56,    60,    67,    70,    73,
+      79,    82,    88
 };
 #endif
 
@@ -1348,17 +1348,14 @@ yyreduce:
   case 3:
 #line 44 "fastfood.y"
     {
-<<<<<<< HEAD
 		printf("%s\n", (yyvsp[(2) - (3)].cmd)->type);
-=======
 		printf("lalalala\n");
->>>>>>> 4343e17b2c5439f8065a8b452012b012225bef68
-		count++;
+
 	}
     break;
 
   case 4:
-#line 51 "fastfood.y"
+#line 52 "fastfood.y"
     {
 		sandwich[count] = add_condition((yyvsp[(1) - (3)].cmd), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 		(yyval.cmd) = &sandwich[count];
@@ -1366,7 +1363,7 @@ yyreduce:
     break;
 
   case 5:
-#line 55 "fastfood.y"
+#line 56 "fastfood.y"
     {
 		sandwich[count] = add_requirement((yyvsp[(1) - (2)].cmd), (yyvsp[(2) - (2)].point));
 		(yyval.cmd) = &sandwich[count];
@@ -1374,7 +1371,7 @@ yyreduce:
     break;
 
   case 6:
-#line 59 "fastfood.y"
+#line 60 "fastfood.y"
     {
 		(yyval.cmd) = (yyvsp[(1) - (1)].cmd);
 		printf("order finish\n");
@@ -1382,51 +1379,55 @@ yyreduce:
     break;
 
   case 7:
-#line 66 "fastfood.y"
+#line 67 "fastfood.y"
     {
 		(yyval.point) = combine_entities((yyvsp[(1) - (3)].point), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 	}
     break;
 
   case 8:
-#line 69 "fastfood.y"
+#line 70 "fastfood.y"
     {
 		(yyval.point) = create_entity((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].point));
 	}
     break;
 
   case 9:
-#line 72 "fastfood.y"
+#line 73 "fastfood.y"
     {
 		(yyval.point) = (yyvsp[(1) - (1)].point);	
 	}
     break;
 
   case 10:
-#line 78 "fastfood.y"
+#line 79 "fastfood.y"
     {
 		(yyval.point) = create_ingredient((yyvsp[(1) - (2)].word), (yyvsp[(2) - (2)].word));
 	}
     break;
 
   case 11:
-#line 81 "fastfood.y"
+#line 82 "fastfood.y"
     {
 		(yyval.point) = create_ingredients((yyvsp[(1) - (3)].word), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 	}
     break;
 
   case 12:
-#line 87 "fastfood.y"
+#line 88 "fastfood.y"
     {
-		sandwich[count] = create_commande((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].word));
+		printf("lalalala\n");
+		sandwich = realloc(sandwich, (count + 1) * sizeof(commandes));
+		sandwich[count++] = create_commande((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].word));
+		printf("henhenhen\n");
 		(yyval.cmd) = &sandwich[count];
+		
 	}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1426 "y.tab.c"
+#line 1431 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1640,7 +1641,7 @@ yyreturn:
 }
 
 
-#line 93 "fastfood.y"
+#line 98 "fastfood.y"
 
 
 

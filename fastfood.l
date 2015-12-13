@@ -37,8 +37,8 @@ TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 
 
 "fromage"[s]?|"jambon-beurre"[s]?|"panini"[s]?|"belge"[s]?|"dieppois"[s]? {
-	yylval.word = yytext;
-	printf("sandwich: %s ",yytext);
+	//yylval.word = yytext;
+	printf("sandwich: %s \n",yytext);
 	return TYPE;
 }
 

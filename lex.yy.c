@@ -929,8 +929,8 @@ case 3:
 YY_RULE_SETUP
 #line 39 "fastfood.l"
 {
-	yylval.word = yytext;
-	printf("sandwich: %s ",yytext);
+	//yylval.word = yytext;
+	printf("sandwich: %s \n",yytext);
 	return TYPE;
 }
 	YY_BREAK

@@ -42,12 +42,9 @@ program: {
 		printf("waiting for the new command\n");
 	}
 	| program condition NEW {
-<<<<<<< HEAD
 		printf("%s\n", $2->type);
-=======
 		printf("lalalala\n");
->>>>>>> 4343e17b2c5439f8065a8b452012b012225bef68
-		count++;
+
 	}
 ;
 		
@@ -89,8 +86,12 @@ taste:
 
 simple:
 	NUMBER TYPE {
-		sandwich[count] = create_commande($1, $2);
+		printf("lalalala\n");
+		sandwich = realloc(sandwich, (count + 1) * sizeof(commandes));
+		sandwich[count++] = create_commande($1, $2);
+		printf("henhenhen\n");
 		$$ = &sandwich[count];
+		
 	}
 ;
 
