@@ -91,7 +91,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "init.h"
-	//int yylex(void);
+	int yylex(void);
 	void yyerror(char*);
 	commandes create_commande(int num, char* type);
 	node* create_ingredient(char* opr, char* name);
@@ -1347,7 +1347,7 @@ yyreduce:
   case 3:
 #line 43 "fastfood.y"
     {
-		printf("%s\n", (yyvsp[(2) - (3)].point));
+		printf("%s\n", (yyvsp[(2) - (3)].cmd)->type);
 		count++;
 	}
     break;
@@ -1356,7 +1356,7 @@ yyreduce:
 #line 50 "fastfood.y"
     {
 		sandwich[count] = add_condition((yyvsp[(1) - (3)].cmd), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
-		(yyval.point) = &sandwich[count];
+		(yyval.cmd) = &sandwich[count];
 	}
     break;
 
@@ -1364,14 +1364,14 @@ yyreduce:
 #line 54 "fastfood.y"
     {
 		sandwich[count] = add_requirement((yyvsp[(1) - (2)].cmd), (yyvsp[(2) - (2)].point));
-		(yyval.point) = &sandwich[count];
+		(yyval.cmd) = &sandwich[count];
 	}
     break;
 
   case 6:
 #line 58 "fastfood.y"
     {
-		(yyval.point) = (yyvsp[(1) - (1)].cmd);
+		(yyval.cmd) = (yyvsp[(1) - (1)].cmd);
 		printf("order finish\n");
 	}
     break;
@@ -1648,7 +1648,7 @@ commandes create_commande(int num, char* type) {
 	cmd.head.typenode = 0;
 	cmd.head.content.word = NULL;
 	cmd.head.left = malloc(sizeof(node));
-	if (cmd.head.left = NULL) {
+	if (cmd.head.left == NULL) {
 		yyerror("not enough memory!\n");
 	}
 	cmd.head.left->typenode = 1;
@@ -1738,7 +1738,7 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	 cmd->head.content.word = spl;
 	 cmd->head.right = cons;
 	 
-	 return cmd;
+	 return *cmd;
  }
 
 void yyerror(char* s) {

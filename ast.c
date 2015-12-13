@@ -7,7 +7,7 @@ commandes create_commande(int num, char* type) {
 	cmd.head.typenode = 0;
 	cmd.head.content.word = NULL;
 	cmd.head.left = malloc(sizeof(node));
-	if (cmd.head.left = NULL) {
+	if (cmd.head.left == NULL) {
 		yyerror("not enough memory!\n");
 	}
 	cmd.head.left->typenode = 1;

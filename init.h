@@ -9,7 +9,7 @@
 /* 1: number                                               */
 /* 2: ingredient                                           */
 /* 3: operation                                            */
-/* 4: entity                                               */                    */
+/* 4: entity                                               */                    
 /***********************************************************/
 int typenode[5] = {0, 1, 2, 3, 4};
 
@@ -40,7 +40,7 @@ typedef struct version {
 	kind* types;
 }version;
 
-commandes* sandwhich;
+commandes* sandwich;
 version* order;
 	
 #endif
