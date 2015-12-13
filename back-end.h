@@ -40,7 +40,7 @@ ingredient cook_panini[5] = {
 	{1.0,"pain"},
 	{1.0,"jambon"},
 	{2.0,"emmental"},
-	{0.5,"tomato"},
+	{0.5,"tomate"},
 	{10.0,"salade"}
 };
 
