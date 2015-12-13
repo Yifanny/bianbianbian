@@ -7,7 +7,7 @@ commandes create_commande(int num, char* type) {
 	cmd.head.typenode = 0;
 	cmd.head.content.word = NULL;
 	cmd.head.left = malloc(sizeof(node));
-	if (cmd.head.left = NULL) {
+	if (cmd.head.left == NULL) {
 		yyerror("not enough memory!\n");
 	}
 	cmd.head.left->typenode = 1;
@@ -98,4 +98,12 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	 cmd->head.right = cons;
 	 
 	 return cmd;
+ }
+ 
+ void nprintf(node* point) {
+	if (point != NULL) {
+		printf(typenode == 1?"number: %d\n", point->content.num:"%s\n", point->content.word);
+		nprintf(point->left);
+	 	nprintf(point->right);
+	 }
  }

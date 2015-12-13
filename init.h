@@ -9,7 +9,7 @@
 /* 1: number                                               */
 /* 2: ingredient                                           */
 /* 3: operation                                            */
-/* 4: entity                                               */                    */
+/* 4: entity                                               */                    
 /***********************************************************/
 int typenode[5] = {0, 1, 2, 3, 4};
 
@@ -32,15 +32,17 @@ typedef struct commandes {
 
 typedef struct kind {
 	char** require;
-	int cnt;	
+	int cnt;
+	int num;	
 }kind;
 
 typedef struct version {
 	char* type;
 	kind* types;
+	int num;
 }version;
 
-commandes* sandwhich;
+commandes* sandwich;
 version* order;
 	
 #endif

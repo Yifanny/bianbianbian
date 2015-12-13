@@ -71,7 +71,8 @@
      INGREDIENT = 260,
      OPERATION = 261,
      SPLITE = 262,
-     CONJUNCTION = 263
+     CONJUNCTION = 263,
+     NEW = 264
    };
 #endif
 /* Tokens.  */
@@ -81,6 +82,7 @@
 #define OPERATION 261
 #define SPLITE 262
 #define CONJUNCTION 263
+#define NEW 264
 
 
 
@@ -91,7 +93,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "init.h"
-	//int yylex(void);
+	int yylex(void);
 	void yyerror(char*);
 	commandes create_commande(int num, char* type);
 	node* create_ingredient(char* opr, char* name);
@@ -128,11 +130,11 @@ typedef union YYSTYPE
 {
 	int num;
 	char* word;
-	node* point;
-	commandes* cmd;
+	struct node* point;
+	struct commandes* cmd;
 }
 /* Line 193 of yacc.c.  */
-#line 136 "y.tab.c"
+#line 138 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -145,7 +147,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 149 "y.tab.c"
+#line 151 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -363,17 +365,17 @@ union yyalloc
 #define YYLAST   16
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  11
+#define YYNTOKENS  10
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  12
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  20
+#define YYNSTATES  19
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   263
+#define YYMAXUTOK   264
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -382,10 +384,10 @@ union yyalloc
 static const yytype_uint8 yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       9,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,    10,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -407,7 +409,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8
+       5,     6,     7,     8,     9
 };
 
 #if YYDEBUG
@@ -422,17 +424,17 @@ static const yytype_uint8 yyprhs[] =
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      12,     0,    -1,    -1,    12,    13,     9,    -1,    16,     7,
-      14,    -1,    16,    14,    -1,    16,    -1,    14,     7,    14,
-      -1,     4,    15,    -1,    15,    -1,     6,     5,    -1,     6,
-       5,    15,    -1,     4,     3,    10,    -1
+      11,     0,    -1,    -1,    11,    12,     9,    -1,    15,     7,
+      13,    -1,    15,    13,    -1,    15,    -1,    13,     7,    13,
+      -1,     4,    14,    -1,    14,    -1,     6,     5,    -1,     6,
+       5,    14,    -1,     4,     3,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    40,    40,    43,    50,    54,    58,    65,    68,    71,
-      77,    80,    86
+       0,    41,    41,    44,    51,    55,    59,    66,    69,    72,
+      78,    81,    87
 };
 #endif
 
@@ -442,8 +444,8 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "TYPE", "NUMBER", "INGREDIENT",
-  "OPERATION", "SPLITE", "CONJUNCTION", "'\\n'", "'/n'", "$accept",
-  "program", "condition", "expr", "taste", "simple", 0
+  "OPERATION", "SPLITE", "CONJUNCTION", "NEW", "$accept", "program",
+  "condition", "expr", "taste", "simple", 0
 };
 #endif
 
@@ -452,23 +454,22 @@ static const char *const yytname[] =
    token YYLEX-NUM.  */
 static const yytype_uint16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,   262,   263,    10,
-      47
+       0,   256,   257,   258,   259,   260,   261,   262,   263,   264
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    11,    12,    12,    13,    13,    13,    14,    14,    14,
-      15,    15,    16
+       0,    10,    11,    11,    12,    12,    12,    13,    13,    13,
+      14,    14,    15
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     0,     3,     3,     2,     1,     3,     2,     1,
-       2,     3,     3
+       2,     3,     2
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -476,8 +477,8 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       2,     0,     1,     0,     0,     6,     0,     3,     0,     0,
-       0,     5,     9,    12,     8,    10,     4,     0,    11,     7
+       2,     0,     1,     0,     0,     6,    12,     3,     0,     0,
+       0,     5,     9,     8,    10,     4,     0,    11,     7
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -491,8 +492,8 @@ static const yytype_int8 yydefgoto[] =
 #define YYPACT_NINF -11
 static const yytype_int8 yypact[] =
 {
-     -11,     2,   -11,     1,     4,     5,     0,   -11,     8,    10,
-      -1,     9,   -11,   -11,   -11,     8,     9,    -1,   -11,     9
+     -11,     4,   -11,     7,     6,     5,   -11,   -11,    -4,     8,
+      -1,     9,   -11,   -11,    -4,     9,    -1,   -11,     9
 };
 
 /* YYPGOTO[NTERM-NUM].  */
@@ -508,22 +509,22 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      16,    14,     2,     8,     6,     9,     3,    19,    18,     8,
-      13,     9,    10,     7,     9,    15,    17
+      15,    13,     9,     8,     2,     9,    18,    17,     3,     8,
+       6,     9,    10,    14,     0,     7,    16
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int8 yycheck[] =
 {
-      10,     8,     0,     4,     3,     6,     4,    17,    15,     4,
-      10,     6,     7,     9,     6,     5,     7
+      10,     8,     6,     4,     0,     6,    16,    14,     4,     4,
+       3,     6,     7,     5,    -1,     9,     7
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    12,     0,     4,    13,    16,     3,     9,     4,     6,
-       7,    14,    15,    10,    15,     5,    14,     7,    15,    14
+       0,    11,     0,     4,    12,    15,     3,     9,     4,     6,
+       7,    13,    14,    14,     5,    13,     7,    14,    13
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1338,90 +1339,90 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 40 "fastfood.y"
+#line 41 "fastfood.y"
     {
 		printf("waiting for the new command\n");
 	}
     break;
 
   case 3:
-#line 43 "fastfood.y"
+#line 44 "fastfood.y"
     {
-		printf("%s\n", (yyvsp[(2) - (3)].point));
+		printf("%s\n", (yyvsp[(2) - (3)].cmd)->type);
 		count++;
 	}
     break;
 
   case 4:
-#line 50 "fastfood.y"
+#line 51 "fastfood.y"
     {
 		sandwich[count] = add_condition((yyvsp[(1) - (3)].cmd), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
-		(yyval.point) = &sandwich[count];
+		(yyval.cmd) = &sandwich[count];
 	}
     break;
 
   case 5:
-#line 54 "fastfood.y"
+#line 55 "fastfood.y"
     {
 		sandwich[count] = add_requirement((yyvsp[(1) - (2)].cmd), (yyvsp[(2) - (2)].point));
-		(yyval.point) = &sandwich[count];
+		(yyval.cmd) = &sandwich[count];
 	}
     break;
 
   case 6:
-#line 58 "fastfood.y"
+#line 59 "fastfood.y"
     {
-		(yyval.point) = (yyvsp[(1) - (1)].cmd);
+		(yyval.cmd) = (yyvsp[(1) - (1)].cmd);
 		printf("order finish\n");
 	}
     break;
 
   case 7:
-#line 65 "fastfood.y"
+#line 66 "fastfood.y"
     {
 		(yyval.point) = combine_entities((yyvsp[(1) - (3)].point), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 	}
     break;
 
   case 8:
-#line 68 "fastfood.y"
+#line 69 "fastfood.y"
     {
 		(yyval.point) = create_entity((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].point));
 	}
     break;
 
   case 9:
-#line 71 "fastfood.y"
+#line 72 "fastfood.y"
     {
 		(yyval.point) = (yyvsp[(1) - (1)].point);	
 	}
     break;
 
   case 10:
-#line 77 "fastfood.y"
+#line 78 "fastfood.y"
     {
 		(yyval.point) = create_ingredient((yyvsp[(1) - (2)].word), (yyvsp[(2) - (2)].word));
 	}
     break;
 
   case 11:
-#line 80 "fastfood.y"
+#line 81 "fastfood.y"
     {
 		(yyval.point) = create_ingredients((yyvsp[(1) - (3)].word), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 	}
     break;
 
   case 12:
-#line 86 "fastfood.y"
+#line 87 "fastfood.y"
     {
-		sandwich[count] = create_commande((yyvsp[(1) - (3)].num), (yyvsp[(2) - (3)].word));
+		sandwich[count] = create_commande((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].word));
 		(yyval.cmd) = &sandwich[count];
 	}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1425 "y.tab.c"
+#line 1426 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1635,7 +1636,7 @@ yyreturn:
 }
 
 
-#line 92 "fastfood.y"
+#line 93 "fastfood.y"
 
 
 
@@ -1648,7 +1649,7 @@ commandes create_commande(int num, char* type) {
 	cmd.head.typenode = 0;
 	cmd.head.content.word = NULL;
 	cmd.head.left = malloc(sizeof(node));
-	if (cmd.head.left = NULL) {
+	if (cmd.head.left == NULL) {
 		yyerror("not enough memory!\n");
 	}
 	cmd.head.left->typenode = 1;
@@ -1738,7 +1739,7 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	 cmd->head.content.word = spl;
 	 cmd->head.right = cons;
 	 
-	 return cmd;
+	 return *cmd;
  }
 
 void yyerror(char* s) {
@@ -1748,6 +1749,5 @@ void yyerror(char* s) {
 
 int main() {
 	yyparse();
-	
 	return 0;
 }

@@ -2,7 +2,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "init.h"
-	//int yylex(void);
+	int yylex(void);
 	void yyerror(char*);
 	commandes create_commande(int num, char* type);
 	node* create_ingredient(char* opr, char* name);
@@ -14,12 +14,12 @@
 	
 	int count;
 %}
-
+%defines
 %union {
 	int num;
 	char* word;
-	node* point;
-	commandes* cmd;
+	struct node* point;
+	struct commandes* cmd;
 };
 
 %token <word> TYPE
@@ -28,11 +28,12 @@
 %token <word> OPERATION
 %token <word> SPLITE
 %token <word> CONJUNCTION
+%token <word> NEW
 
 %type <cmd> simple
 %type <point> taste
 %type <point> expr
-%type <point> condition
+%type <cmd> condition
 %type <cmd> program
 
 
@@ -40,8 +41,8 @@
 program: {
 		printf("waiting for the new command\n");
 	}
-	| program condition '\n' {
-		printf("%s\n", $2);
+	| program condition NEW {
+		printf("%s\n", $2->type);
 		count++;
 	}
 ;
@@ -83,7 +84,7 @@ taste:
 ;
 
 simple:
-	NUMBER TYPE '/n' {
+	NUMBER TYPE {
 		sandwich[count] = create_commande($1, $2);
 		$$ = &sandwich[count];
 	}
@@ -101,7 +102,7 @@ commandes create_commande(int num, char* type) {
 	cmd.head.typenode = 0;
 	cmd.head.content.word = NULL;
 	cmd.head.left = malloc(sizeof(node));
-	if (cmd.head.left = NULL) {
+	if (cmd.head.left == NULL) {
 		yyerror("not enough memory!\n");
 	}
 	cmd.head.left->typenode = 1;
@@ -191,7 +192,7 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	 cmd->head.content.word = spl;
 	 cmd->head.right = cons;
 	 
-	 return cmd;
+	 return *cmd;
  }
 
 void yyerror(char* s) {
@@ -201,6 +202,5 @@ void yyerror(char* s) {
 
 int main() {
 	yyparse();
-	
 	return 0;
 }
