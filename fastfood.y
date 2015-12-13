@@ -42,7 +42,7 @@ program: {
 		printf("waiting for the new command\n");
 	}
 	| program condition NEW {
-		printf("%s\n", $2->type);
+		printf("lalalala\n");
 		count++;
 	}
 ;

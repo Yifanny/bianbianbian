@@ -36,7 +36,6 @@ TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 }
 
 
-
 "fromage"[s]?|"jambon-beurre"[s]?|"panini"[s]?|"belge"[s]?|"dieppois"[s]? {
 	yylval.word = yytext;
 	printf("sandwich: %s ",yytext);
@@ -44,16 +43,10 @@ TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 }
 
 
-"double "?{INGREDIENT} {
+{INGREDIENT} {
 	yylval.word = yytext;
 	printf("ingredient: %s ",yytext);
 	return INGREDIENT;
-}
-
- %{ 
-"avec "/"double" {
-	yylval.word = yytext;
-	printf("operator: %s ",yytext);
 }
 
 "mais "("sans"|"avec") {
@@ -62,12 +55,13 @@ TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 	return OPERATION;
 }
 
-", "|"sans "|"avec "[double]?|"ni "|"et "/{INGREDIENT} {
+", "|"sans "|"avec "("double")?|"ni "|"et "/{INGREDIENT} {
 	yylval.word = yytext;
 	printf("lalala");
 	printf("operator: %s ",yytext);
 	return OPERATION;
 }
+
 "dont "|"et "/([1-9]+) {
 	yylval.word = yytext;
 	printf("splite: %s ",yytext);

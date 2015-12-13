@@ -1348,7 +1348,7 @@ yyreduce:
   case 3:
 #line 44 "fastfood.y"
     {
-		printf("%s\n", (yyvsp[(2) - (3)].cmd)->type);
+		printf("lalalala\n");
 		count++;
 	}
     break;

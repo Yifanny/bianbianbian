@@ -38,6 +38,7 @@ typedef struct kind {
 typedef struct version {
 	char* type;
 	kind* types;
+	int num;
 }version;
 
 commandes* sandwich;
