@@ -10,8 +10,6 @@
 #include<string.h>
 #include "init.h"
 
-extern count;
-
 struct price {
 	char* name;
 	float euro;
@@ -43,14 +41,14 @@ ingredient cook_fromage[3] = {
 	{2.0,"emmental"}
 };
 
-static ingredient cook_jambon[4] = {
+ingredient cook_jambon[4] = {
 	{1.0,"pain"},
 	{1.0,"jambon"},
 	{10.0,"beurre"},
 	{10.0,"salade"}
 };
 
-static ingredient cook_panini[5] = {
+ingredient cook_panini[5] = {
 	{1.0,"pain"},
 	{1.0,"jambon"},
 	{2.0,"emmental"},
@@ -58,7 +56,7 @@ static ingredient cook_panini[5] = {
 	{10.0,"salade"}
 };
 
-static ingredient cook_belge[5] = {
+ingredient cook_belge[5] = {
 	{1.0,"pain"},
 	{1.0,"steak"},
 	{50.0,"frites"},
@@ -66,14 +64,39 @@ static ingredient cook_belge[5] = {
 	{10.0,"salade"}
 };
 
-static ingredient cook_dieppois[4] = {
+ingredient cook_dieppois[4] = {
 	{1.0,"pain"},
 	{50.0,"thon"},
 	{20.0,"mayonnaise"},
 	{10.0,"salade"}
 };
 
-
+cook* init(){
+	int i;
+	cook* cook_list;
+	cook_list = malloc(5 * sizeof(cook));
+	cook_list[0].name = "fromage";
+	for(i = 0; i < sizeof(cook_fromage); i++){
+			cook_list[0].material[i] = cook_fromage[i];
+	}
+	cook_list[1].name = "jambon-beurre";
+	for(i = 0; i < sizeof(cook_jambon); i++){
+		cook_list[1].material[i] = cook_jambon[i];
+	}
+	cook_list[2].name = "panini";
+	for(i = 0; i < sizeof(cook_panini); i++){
+		cook_list[2].material[i] = cook_panini[i];
+	}
+	cook_list[3].name = "belge";
+	for(i = 0; i < sizeof(cook_belge); i++){
+		cook_list[3].material[i] = cook_belge[i];
+	}
+	cook_list[4].name = "dieppois";
+	for(i = 0; i < sizeof(cook_dieppois); i++){
+		cook_list[4].material[i] = cook_dieppois[i];
+	}
+	return cook_list;
+}
 /*float InOrder(node_c* tree) {
 	int num;
 	float sum;
@@ -105,20 +128,15 @@ static ingredient cook_dieppois[4] = {
 }*/
 
 void facture(version* ver){
+	cook* cook_list;
+	cook_list = init();
 	float total = 0.0;
-	static cook cook_list[5] = {
-		{"fromage",cook_fromage[3]},
-		{"jambon-beurre",cook_jambon[4]},
-		{"panini",cook_panini[5]},
-		{"belge",cook_belge[5]},
-		{"dieppois",cook_dieppois[4]}
-	};
 	while(ver){
 		char* sandwich = ver->type;
 		int n = sizeof(ver->types);
 		int i, j, sum;
 		float cost;
-		kind reqs[n];
+		kind* reqs;
 		reqs = malloc(n * sizeof(kind));
 		for(i = 0, sum = 0; i < n; i++) {
 			reqs[i] = ver->types[i];
@@ -135,8 +153,8 @@ void facture(version* ver){
 		total = total + cost * sum;
 		cost = 0.0;
 		for(i = 0; i < n; i++){
-			for(j = 0; j < sizeof(res[i].require); j++) {
-				printf("  %2d%18s",res[i].cnt,res[i].require[j]);
+			for(j = 0; j < sizeof(reqs[i].require); j++) {
+				printf("  %2d%18s",reqs[i].cnt,reqs[i].require[j]);
 				cost = 0.5 * reqs[i].cnt;
 				printf("%.2f\n",cost);
 				total = total + cost;
@@ -149,13 +167,8 @@ void facture(version* ver){
 
 
 void inventaire(version* ver){
-	cook cook_list[5] = {
-		{"fromage",cook_fromage[3]},
-		{"jambon-beurre",cook_jambon[4]},
-		{"panini",cook_panini[5]},
-		{"belge",cook_belge[5]},
-		{"dieppois",cook_dieppois[4]}
-	};
+	cook* cook_list;
+	cook_list = init();
 	ingredient list[12] = {
 		{0.0,"pain"},
 		{0.0,"jambon"},
@@ -191,18 +204,18 @@ void inventaire(version* ver){
 		}
 		kind* reqs;
 		n = sizeof(ver->types);
-		reqs = malloc(n * kind);
+		reqs = malloc(n * sizeof(kind));
 		reqs = ver->types;
 		for(i = 0; i < n; i++) {
 			for(j = 0; j < sizeof(reqs[i].require); j++) {
-				if(strstr(reqs[i].require[j],"sans") != NULL || strstr(reqs[i],require[j],"avec") != NULL) {
+				if(strstr(reqs[i].require[j],"sans") != NULL || strstr(reqs[i].require[j],"avec") != NULL) {
 					n = sizeof(reqs[i].require[j]) - 5;
 					modingred = malloc(n * sizeof(char));
 					modingred = reqs[i].require[j] + 5;
 					for(k = 0; k < 12; k++) {
 						if(strcmp(modingred,list[k].name) == 0) {
 							for(r = 0; r < sizeof(cur); r++){
-								if(strcmp(cur[r].name,delingred) == 0){
+								if(strcmp(cur[r].name,modingred) == 0){
 									if(strstr(reqs[i].require[j],"sans") != NULL){
 										list[k].num = list[k].num - reqs[i].cnt * cur[r].num;
 									}
@@ -219,7 +232,7 @@ void inventaire(version* ver){
 		ver++;
 	}
 	for(i = 0; i < 12; i++) {
-		printf("%s,%d\n",list[i].name,list[i].num);
+		printf("%s,%.2f\n",list[i].name,list[i].num);
 	}
 }
 
