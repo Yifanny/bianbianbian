@@ -27,7 +27,7 @@ price price_list[5] = {
 	{"dieppois",4.5}
 };
 
-typedef ingredient {
+typedef struct ingredient {
 	float num;
 	char* name;
 }ingredient;
@@ -43,14 +43,14 @@ ingredient cook_fromage[3] = {
 	{2.0,"emmental"}
 };
 
-ingredient cook_jambon[4] = {
+static ingredient cook_jambon[4] = {
 	{1.0,"pain"},
 	{1.0,"jambon"},
 	{10.0,"beurre"},
 	{10.0,"salade"}
 };
 
-ingredient cook_panini[5] = {
+static ingredient cook_panini[5] = {
 	{1.0,"pain"},
 	{1.0,"jambon"},
 	{2.0,"emmental"},
@@ -58,7 +58,7 @@ ingredient cook_panini[5] = {
 	{10.0,"salade"}
 };
 
-ingredient cook_belge[5] = {
+static ingredient cook_belge[5] = {
 	{1.0,"pain"},
 	{1.0,"steak"},
 	{50.0,"frites"},
@@ -66,22 +66,15 @@ ingredient cook_belge[5] = {
 	{10.0,"salade"}
 };
 
-ingredient cook_dieppois[4] = {
+static ingredient cook_dieppois[4] = {
 	{1.0,"pain"},
 	{50.0,"thon"},
 	{20.0,"mayonnaise"},
 	{10.0,"salade"}
 };
 
-cook cook_list[5] = {
-	{"fromage",cook_fromage[3]},
-	{"jambon-beurre",cook_jambon[4]},
-	{"panini",cook_panini[5]},
-	{"belge",cook_belge[5]},
-	{"dieppois",cook_dieppois[4]}
-}
 
-float InOrder(node_c* tree) {
+/*float InOrder(node_c* tree) {
 	int num;
 	float sum;
 	if(tree) {
@@ -109,10 +102,17 @@ float InOrder(node_c* tree) {
 		sum = sum + InOrder(tree->right);
 	}
 	return sum;
-}
+}*/
 
 void facture(version* ver){
 	float total = 0.0;
+	static cook cook_list[5] = {
+		{"fromage",cook_fromage[3]},
+		{"jambon-beurre",cook_jambon[4]},
+		{"panini",cook_panini[5]},
+		{"belge",cook_belge[5]},
+		{"dieppois",cook_dieppois[4]}
+	};
 	while(ver){
 		char* sandwich = ver->type;
 		int n = sizeof(ver->types);
@@ -149,6 +149,13 @@ void facture(version* ver){
 
 
 void inventaire(version* ver){
+	cook cook_list[5] = {
+		{"fromage",cook_fromage[3]},
+		{"jambon-beurre",cook_jambon[4]},
+		{"panini",cook_panini[5]},
+		{"belge",cook_belge[5]},
+		{"dieppois",cook_dieppois[4]}
+	};
 	ingredient list[12] = {
 		{0.0,"pain"},
 		{0.0,"jambon"},
