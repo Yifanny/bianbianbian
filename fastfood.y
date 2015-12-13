@@ -18,6 +18,8 @@
 %union {
 	int num;
 	char* word;
+	node* point;
+	commandes* cmd;
 };
 
 %token <word> TYPE
@@ -27,8 +29,11 @@
 %token <word> SPLITE
 %token <word> CONJUNCTION
 
-%left '+' '-'
-%left '*' '/'
+%type <cmd> simple
+%type <point> taste
+%type <point> expr
+%type <point> condition
+%type <cmd> program
 
 %%
 program:
