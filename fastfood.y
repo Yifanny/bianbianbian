@@ -43,7 +43,7 @@ program: {
 	}
 	| program condition NEW {
 		printf("%s\n", $2->type);
-		printf("lalalala\n");
+		printf("nice taste\n");
 
 	}
 ;

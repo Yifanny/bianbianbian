@@ -1349,7 +1349,7 @@ yyreduce:
 #line 44 "fastfood.y"
     {
 		printf("%s\n", (yyvsp[(2) - (3)].cmd)->type);
-		printf("lalalala\n");
+		printf("nice taste\n");
 
 	}
     break;
