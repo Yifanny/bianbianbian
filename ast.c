@@ -99,3 +99,11 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	 
 	 return cmd;
  }
+ 
+ void nprintf(node* point) {
+	if (point != NULL) {
+		printf(typenode == 1?"number: %d\n", point->content.num:"%s\n", point->content.word);
+		nprintf(point->left);
+	 	nprintf(point->right);
+	 }
+ }

@@ -1,8 +1,8 @@
 %{
-#include<stdio.h>
-#include<string.h>
-#include<stdlib.h>
-
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "y.tab.h"
 void yyerror(char*);
 int yylex(void);
 char* res;
@@ -24,48 +24,58 @@ INGREDIENT "pain"|"beurre"|"emmental"|"jambon"|"beurre"|"salade"|"tomate"|"steak
 TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 
 %%
-[\n] printf("\n");
+[\n] { 
+	printf("\n"); 
+	return NEW;
+}
+
 [1-9]+ {
-	//strcpy(yylval,yytext);
-	printf("id%s ",yytext);
-	//return NUMBER;
+	yylval.num = atoi(yytext);
+	printf("id: %s ",yytext);
+	return NUMBER;
 }
 
 
 
-"fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]* {
-	//strcpy(yytext,yylval);
-	printf("sandwich%s ",yytext);
-	//return TYPE;
+"fromage"[s]?|"jambon-beurre"[s]?|"panini"[s]?|"belge"[s]?|"dieppois"[s]? {
+	yylval.word = yytext;
+	printf("sandwich: %s ",yytext);
+	return TYPE;
 }
 
 
 "double "?{INGREDIENT} {
-	//strcpy(yytext,yylval);
-	printf("ingredient%s ",yytext);
-	//return INGREDIENT;
+	yylval.word = yytext;
+	printf("ingredient: %s ",yytext);
+	return INGREDIENT;
 }
 
+ %{ 
 "avec "/"double" {
-	//strcpy(yytext,yylval);
-	printf("operator%s ",yytext);
+	yylval.word = yytext;
+	printf("operator: %s ",yytext);
 }
 
 "mais "("sans"|"avec") {
-	//strcpy(yytext,yylval);
-	printf("operator%s ",yytext);
-	//return OPERATION;
+	yylval.word = yytext;
+	printf("operator: %s ",yytext);
+	return OPERATION;
 }
 
-", "|"sans "|"avec "|"ni "|"et "/{INGREDIENT} {
-	//strcpy(yytext,yylval);
-	//printf("lalala");
-	printf("operator%s ",yytext);
-	//return OPERATION;
+", "|"sans "|"avec "[double]?|"ni "|"et "/{INGREDIENT} {
+	yylval.word = yytext;
+	printf("lalala");
+	printf("operator: %s ",yytext);
+	return OPERATION;
 }
 "dont "|"et "/([1-9]+) {
-	//strcpy(yytext,yylval);
-	printf("splite%s ",yytext);
-	//return SPLITE;
+	yylval.word = yytext;
+	printf("splite: %s ",yytext);
+	return SPLITE;
 }
 %%
+
+int yywarp(void) {
+	return 1;
+	
+}

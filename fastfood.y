@@ -14,12 +14,12 @@
 	
 	int count;
 %}
-
+%defines
 %union {
 	int num;
 	char* word;
-	node* point;
-	commandes* cmd;
+	struct node* point;
+	struct commandes* cmd;
 };
 
 %token <word> TYPE
@@ -28,6 +28,7 @@
 %token <word> OPERATION
 %token <word> SPLITE
 %token <word> CONJUNCTION
+%token <word> NEW
 
 %type <cmd> simple
 %type <point> taste
@@ -40,7 +41,7 @@
 program: {
 		printf("waiting for the new command\n");
 	}
-	| program condition '\n' {
+	| program condition NEW {
 		printf("%s\n", $2->type);
 		count++;
 	}
@@ -83,7 +84,7 @@ taste:
 ;
 
 simple:
-	NUMBER TYPE '/n' {
+	NUMBER TYPE {
 		sandwich[count] = create_commande($1, $2);
 		$$ = &sandwich[count];
 	}
@@ -201,6 +202,5 @@ void yyerror(char* s) {
 
 int main() {
 	yyparse();
-	
 	return 0;
 }
