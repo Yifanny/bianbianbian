@@ -8,8 +8,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<fcntl.h>
 #include "init.h"
-#include "back-end.h"
+#include "config.h"
 
 cook* init(){
 	int i;
@@ -218,6 +219,11 @@ void inventaire(version* ver,int num){
 	for(i = 0; i < 12; i++) {
 		printf("%s,%.2f\n",list[i].name,list[i].num);
 	}
+}
+
+void cuisine(version* ver, int count) {
+	int str = fopen("./cuisine.html", a+);
+	if(fwrite()	
 }
 
 int main() {
