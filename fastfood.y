@@ -2,7 +2,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "init.h"
-	int yylex(void);
+	//int yylex(void);
 	void yyerror(char*);
 	commandes create_commande(int num, char* type);
 	node* create_ingredient(char* opr, char* name);
@@ -35,9 +35,12 @@
 %type <point> condition
 %type <cmd> program
 
+
 %%
-program:
-	program condition '\n' {
+program: {
+		printf("waiting for the new command\n");
+	}
+	| program condition '\n' {
 		printf("%s\n", $2);
 		count++;
 	}
@@ -196,5 +199,8 @@ void yyerror(char* s) {
 		
 }
 
-
-
+int main() {
+	yyparse();
+	
+	return 0;
+}
