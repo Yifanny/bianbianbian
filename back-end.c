@@ -32,7 +32,7 @@ typedef struct ingredient {
 
 typedef struct cook {
 	char* name;
-	ingredient material[];
+	ingredient material[5];
 }cook;
 
 ingredient cook_fromage[3] = {
