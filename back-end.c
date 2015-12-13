@@ -67,22 +67,22 @@ cook* init(){
 	return sum;
 }*/
 
-void facture(version* ver){
+void facture(version* ver, int count){
 	cook* cook_list;
 	cook_list = init();
 	float total = 0.0;
 	int k = 0;
-	while(k < ver->num){
-		char* sandwich = ver->type;
-		int n = ver->num;
+	while(k < count){
+		char* sandwich = ver[k].type;
+		int n = ver[k].num;
 		//int n = 2;
-		printf("nnnnn%d\n",n);
+		//printf("nnnnn%d\n",n);
 		int i, j, sum;
 		float cost;
 		kind* reqs;
 		reqs = malloc(n * sizeof(kind));
 		for(i = 0, sum = 0; i < n; i++) {
-			reqs[i] = ver->types[i];
+			reqs[i] = ver[k].types[i];
 			sum = sum + reqs[i].cnt;
 		}
 		printf("%2d%s", sum, sandwich);
@@ -111,13 +111,12 @@ void facture(version* ver){
 			}
 		}
 		k++;
-		ver++;
 	}
 	printf("          Total : %.2f\n",total);
 }
 
 
-void inventaire(version* ver){
+void inventaire(version* ver,int num){
 	cook* cook_list;
 	cook_list = init();
 	ingredient list[12] = {
@@ -153,11 +152,11 @@ void inventaire(version* ver){
 	//while(ver) {
 	int m, f;
 	m = 0;
-	while(m<2) {
+	while(m<num) {
 		sum = 0;
 		f = 0;
 		while(/*ver->types*/ f < ver->num){
-			printf(" sum %d\n",sum);
+			//printf(" sum %d\n",sum);
 			sum = sum + ver->types[f].cnt;;
 			f++;
 		}
@@ -192,13 +191,13 @@ void inventaire(version* ver){
 					if(strstr(modingred,"double") != NULL) {
 						modingred = modingred + 7;
 					}
-					     printf("%s\n",modingred);
+					     //printf("%s\n",modingred);
 					for(k = 0; k < 12; k++) {
 						if(strcmp(modingred,list[k].name) == 0) {
-							printf(" count %s %d\n",ver->type,count);
+							  //printf(" count %s %d\n",ver->type,count);
 							for(r = 0; r < count; r++){
 								if(strcmp(cur[r].name,modingred) == 0){
-									printf("cnt %d\n",reqs[i].cnt);
+									  //printf("cnt %d\n",reqs[i].cnt);
 									if(strstr(reqs[i].require[j],"sans") != NULL){
 										list[k].num = list[k].num - reqs[i].cnt * cur[r].num;
 									}
@@ -214,7 +213,7 @@ void inventaire(version* ver){
 		}
 		m++;
 		ver++;
-			printf("12345\n");
+			//printf("12345\n");
 	}
 	for(i = 0; i < 12; i++) {
 		printf("%s,%.2f\n",list[i].name,list[i].num);
@@ -231,14 +230,14 @@ int main() {
 	order[1].num = 2;
 	order[0].types = malloc(2 * sizeof(kind));
 	order[1].types = malloc(2 * sizeof(kind));
-	printf("ooooo\n");
+	//printf("ooooo\n");
 	
 	order[0].types[0].require = malloc(1 * sizeof(char*));
 	order[0].types[0].require[0] = malloc(20 * sizeof(char));
 	order[0].types[0].require[0] = "sans tomate";
 	order[0].types[0].cnt = 1;
 	order[0].types[0].num = 1;
-	printf("1100000\n");
+	//printf("1100000\n");
 	order[0].types[1].require = malloc(2 * sizeof(char*));
 	order[0].types[1].require[0] = malloc(20 * sizeof(char));
 	order[0].types[1].require[1] = malloc(20 * sizeof(char));
@@ -246,13 +245,13 @@ int main() {
 	order[0].types[1].require[1] = "sans jambon";
 	order[0].types[1].cnt = 2;
 	order[0].types[1].num = 2;
-	printf("1200000\n");
+	//printf("1200000\n");
 	order[1].types[0].require = malloc(1 * sizeof(char*));
 	order[1].types[0].require[0] = malloc(20 * sizeof(char));
 	order[1].types[0].require[0] = "";
 	order[1].types[0].cnt = 3;
 	order[1].types[0].num = 1;
-	printf("2100000\n");
+	//printf("2100000\n");
 	order[1].types[1].require = malloc(2 * sizeof(char*));
 	order[1].types[1].require[0] = malloc(20 * sizeof(char));
 	order[1].types[1].require[1] = malloc(20 * sizeof(char));
@@ -260,11 +259,11 @@ int main() {
 	order[1].types[1].require[1] = "avec double frites";
 	order[1].types[1].cnt = 1;
 	order[1].types[1].num = 2;
-	printf("2200000\n");
+	//printf("2200000\n");
 
-	printf("%s\n",order[0].types[0].require[0]);	
-	printf("lalala\n");
-	facture(order);
-	inventaire(order);
+	//printf("%s\n",order[0].types[0].require[0]);	
+	//printf("lalala\n");
+	facture(order,2);
+	inventaire(order,2);
 	return 0;
 }
