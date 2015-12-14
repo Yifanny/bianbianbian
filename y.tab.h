@@ -45,7 +45,8 @@
      OPERATION = 261,
      SPLITE = 262,
      CONJUNCTION = 263,
-     NEW = 264
+     NEW = 264,
+     NO_MORE_SPLITE = 265
    };
 #endif
 /* Tokens.  */
@@ -56,13 +57,14 @@
 #define SPLITE 262
 #define CONJUNCTION 263
 #define NEW 264
+#define NO_MORE_SPLITE 265
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 18 "fastfood.y"
+#line 22 "fastfood.y"
 {
 	int num;
 	char* word;
@@ -70,7 +72,7 @@ typedef union YYSTYPE
 	struct commandes* cmd;
 }
 /* Line 1529 of yacc.c.  */
-#line 74 "y.tab.h"
+#line 76 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
