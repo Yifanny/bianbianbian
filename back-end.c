@@ -8,7 +8,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<unistd.h>
 #include<fcntl.h>
+#include<sys/types.h>
+#include<sys/stat.h>
 #include "init.h"
 #include "config.h"
 
@@ -73,6 +76,7 @@ void facture(version* ver, int count){
 	cook_list = init();
 	float total = 0.0;
 	int k = 0;
+	int ndh, net, ni, r;
 	while(k < count){
 		char* sandwich = ver[k].type;
 		int n = ver[k].num;
@@ -106,6 +110,21 @@ void facture(version* ver, int count){
 				if(strstr(reqs[i].require[j],"avec") != NULL || strstr(reqs[i].require[j],"sans") != NULL) {
 					printf("  %2d%18s",reqs[i].cnt,reqs[i].require[j]);
 					cost = 0.5 * reqs[i].cnt;
+					ndh = net = ni = 0;
+					for(r = 0; r < strlen(reqs[i].require[j])-1; r++){
+						if(reqs[i].require[j][r] == ','){
+							ndh = ndh + 1;
+						}
+						else if(reqs[i].require[j][r] == 'e'){
+							if(reqs[i].require[j][r+1] == 't')
+								net = net + 1;
+						}
+						else if(reqs[i].require[j][r] == 'n'){
+							if(reqs[i].require[j][r+1] == 'i')
+								ni = ni + 1;
+						}
+					}
+					cost = cost + 0.5 * reqs[i].cnt * (ndh + net + ni);
 					printf("%.2f\n",cost);
 				}
 				total = total + cost;
@@ -134,6 +153,7 @@ void inventaire(version* ver,int num){
 		{0.0,"steak"},
 		{0.0,"thon"}
 	};
+	ingredient add[]
 	int n, i, j, k, r, count, sum;
 	
 	int material[5] = {3, 4, 5, 5, 4};
@@ -201,9 +221,31 @@ void inventaire(version* ver,int num){
 									  //printf("cnt %d\n",reqs[i].cnt);
 									if(strstr(reqs[i].require[j],"sans") != NULL){
 										list[k].num = list[k].num - reqs[i].cnt * cur[r].num;
+										int ni, ndh, p;
+										ni = ndh = 0;
+										for(p = 0; p < strlen(reqs[i].require[j][p])-1; p++) {
+											if(reqs[i].require[j][p] == 'n'){
+												if(reqs[i].require[j][p+1] == 'i')
+													ni = ni + 1;
+											}
+											if(reqs[i].require[j][p] == ',')
+												ndh = ndh + 1;
+										}
+										list[k].num = list[k].num - reqs[i].cnt * cur[r].num * (ni + ndh);
 									}
 									else{
 										list[k].num = list[k].num + reqs[i].cnt * cur[r].num;
+										int ndh, net, q;
+										ndh = net = 0;
+										for(q = 0; q < strlen(reqs[i].require[j][q])-1; q++){
+											if(reqs[i].require[j][q] == ',')
+												ndh = ndh + 1;
+											if(reqs[i].require[j][q] == 'e') {
+												if(reqs[i].require[j][q] == 't')
+													net = net + 1;
+											}
+										} 
+										list[k].num = list[k].num + reqs[i].cnt * cur[r].num * (ndh + net);
 									}
 								}
 							}	
@@ -222,8 +264,35 @@ void inventaire(version* ver,int num){
 }
 
 void cuisine(version* ver, int count) {
-	int str = fopen("./cuisine.html", a+);
-	if(fwrite()	
+	int stream;
+	if((stream = open("./cuisine.html", O_CREATE) == -1) {
+		printf("create fail!\n");
+		exit(1);	
+	}
+	char buf[256] = "<html><head><title>Cuisine</title><body>";
+	if(write(stream, buf, strlen(buf) == -1) {
+		printf("write fail\n");
+	}
+	int n = 0;
+	int i, j, k;
+	while(n < count) {
+		char buf1[256];
+		strcpy(buf1, "<h1>");
+		strcat(buf1, ver[n].type);
+		strcat(buf1, "</h1><ul>");
+		if(write(stream, buf1, strlen(buf1)) == -1) {
+			printf("write %s fail\n",ver[n].type);
+		}
+		for(i = 0; i < ver[n].num; i++){
+			for(j = 0; j < ver[n].types[i].num; j++) {
+				char buf2[256] = "<li>";
+				strcat(buf2,itoa(ver[n].types[i].cnt));
+				strcat(buf2," ");
+				strcat(buf2,ver[n].types[i].require[j]);
+				strcat(buf2,"</li>");
+			}
+		}
+	}
 }
 
 int main() {
