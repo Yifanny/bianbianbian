@@ -37,33 +37,42 @@ TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 
 
 "fromage"[s]?|"jambon-beurre"[s]?|"panini"[s]?|"belge"[s]?|"dieppois"[s]? {
-	//yylval.word = yytext;
+	yylval.word = malloc((yyleng + 1) * sizeof(char));
+	yylval.word = strncpy(yylval.word, yytext, yyleng);
+	yylval.word[yyleng] = '\0';
 	printf("sandwich: %s \n",yytext);
 	return TYPE;
 }
 
 
 {INGREDIENT} {
-	yylval.word = yytext;
+	yylval.word = malloc((yyleng + 1) * sizeof(char));
+	yylval.word = strncpy(yylval.word, yytext, yyleng);
+	yylval.word[yyleng] = '\0';
 	printf("ingredient: %s ",yytext);
 	return INGREDIENT;
 }
 
 "mais "("sans"|"avec") {
-	yylval.word = yytext;
+	yylval.word = malloc((yyleng + 1) * sizeof(char));
+	yylval.word = strncpy(yylval.word, yytext, yyleng);
+	yylval.word[yyleng] = '\0';
 	printf("operator: %s ",yytext);
 	return OPERATION;
 }
 
-", "|"sans "|"avec "("double")?|"ni "|"et "/{INGREDIENT} {
-	yylval.word = yytext;
-	printf("lalala");
+", "|"sans "|"avec "("double ")?|"ni "|"et "("double ")?/{INGREDIENT} {
+	yylval.word = malloc((yyleng + 1) * sizeof(char));
+	yylval.word = strncpy(yylval.word, yytext, yyleng);
+	yylval.word[yyleng] = '\0';
 	printf("operator: %s ",yytext);
 	return OPERATION;
 }
 
 "dont "|"et "/([1-9]+) {
-	yylval.word = yytext;
+	yylval.word = malloc((yyleng + 1) * sizeof(char));
+	yylval.word = strncpy(yylval.word, yytext, yyleng);
+	yylval.word[yyleng] = '\0';
 	printf("splite: %s ",yytext);
 	return SPLITE;
 }

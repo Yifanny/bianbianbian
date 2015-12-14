@@ -2,6 +2,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "init.h"
+	#include "config.h"
 	int yylex(void);
 	void yyerror(char*);
 	commandes create_commande(int num, char* type);
@@ -11,7 +12,10 @@
 	node* combine_entities(node* ent1, char* spl, node* ent2);
 	commandes add_requirement(commandes* cmd, node* req);
 	commandes add_condition(commandes* cmd, char* spl, node* cons);
-	
+	void nshow(node* point);
+	cook* init();
+	ingredient* inventaire(version* ver,int num);
+	cook* menu;
 	int count;
 %}
 %defines
@@ -36,42 +40,44 @@
 %type <cmd> condition
 %type <cmd> program
 
+%nonassoc NO_MORE_SPLITE
+%nonassoc SPLITE
 
 %%
 program: {
 		printf("waiting for the new command\n");
 	}
-	| program condition NEW {
-		printf("%s\n", $2->type);
-		printf("nice taste\n");
+	| program condition NEW {		
+		printf("%s, nice choice\n", sandwich[count - 1].type);
+		
+		printf("waiting for the new command\n");
 
 	}
 ;
 		
 condition:
 	simple SPLITE expr {
-		sandwich[count] = add_condition($1, $2, $3);
-		$$ = &sandwich[count];
+		printf("require are %s\n", sandwich[count - 1].type);
+		sandwich[count - 1] = add_condition($1, $2, $3);
+		
+		$$ = &sandwich[count - 1];
 	}
-	| simple expr {
-		sandwich[count] = add_requirement($1, $2);
-		$$ = &sandwich[count];
+	| simple taste {
+		sandwich[count - 1] = add_requirement($1, $2);
+		$$ = &sandwich[count - 1];
 	}
 	| simple {
 		$$ = $1;
-		printf("order finish\n");
+		printf("No %d: order finish\n", count);
 	}
 ;
 
 expr:
-	expr SPLITE expr {
+	expr SPLITE expr %prec NO_MORE_SPLITE {
 		$$ = combine_entities($1, $2, $3);
 	}
 	| NUMBER taste {
 		$$ = create_entity($1, $2);
-	}
-	| taste {
-		$$ = $1;	
 	}
 ;
 
@@ -86,11 +92,17 @@ taste:
 
 simple:
 	NUMBER TYPE {
-		printf("lalalala\n");
-		sandwich = realloc(sandwich, (count + 1) * sizeof(commandes));
+		printf("%s\n", $2);
+		if (count) {
+			sandwich = realloc(sandwich, (count + 1) * sizeof(commandes));
+		}
+		else {
+			sandwich = malloc(sizeof(commandes));
+		}
+			
 		sandwich[count++] = create_commande($1, $2);
-		printf("henhenhen\n");
-		$$ = &sandwich[count];
+		printf("%s commande taken!\n", sandwich[count - 1].type);
+		$$ = &sandwich[count - 1];
 		
 	}
 ;
@@ -103,6 +115,7 @@ simple:
 
 commandes create_commande(int num, char* type) {
 	commandes cmd;
+	printf("creating %s \n", type);
 	cmd.type = type;
 	cmd.head.typenode = 0;
 	cmd.head.content.word = NULL;
@@ -200,12 +213,27 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	 return *cmd;
  }
 
+ void nshow(node* point) {
+	if (point != NULL) {
+		if (point->typenode == 1) {
+					printf("number: %d\n", point->content.num);
+		}
+		else {
+			printf("%s\n", point->content.word);
+		}
+		
+		nshow(point->left);
+	 	nshow(point->right);
+	 }
+ }
+ 
 void yyerror(char* s) {
 	fprintf(stderr, "%s\n", s);
 		
 }
 
 int main() {
+	menu = init();
 	yyparse();
 	return 0;
 }
