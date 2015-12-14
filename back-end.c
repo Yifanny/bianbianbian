@@ -111,14 +111,14 @@ void facture(version* ver, int count){
 			reqs[i] = ver[k].types[i];
 			sum = sum + reqs[i].cnt;
 		}
-		printf("%2d%s", sum, sandwich);
+		printf("%2d %-26s", sum, sandwich);
 		for(i = 0; i < 5; i++){
 			if(strcmp(sandwich,price_list[i].name) == 0){
 				cost = price_list[i].euro;
 				break;
 			}
 		}
-		printf("     %.2f\n", cost * sum);
+		printf("%.2f\n", cost * sum);
 		total = total + cost * sum;
 		cost = 0.0;
 		//printf("rererere%lu\n",sizeof(reqs[0].require));
@@ -129,7 +129,12 @@ void facture(version* ver, int count){
 				//printf("%s\n",reqs[i].require[j]);
 				//printf("%s\n",strstr(reqs[i].require[j],"avec"));
 				if(strstr(reqs[i].require[j],"avec") != NULL || strstr(reqs[i].require[j],"sans") != NULL) {
-					printf("  %2d%18s",reqs[i].cnt,reqs[i].require[j]);
+					if(strstr(reqs[i].require[j],"mais") != NULL) {
+						printf("  %2d %-25s",reqs[i].cnt,reqs[i].require[j] + 5);
+					}
+					else {
+						printf("  %2d %-25s",reqs[i].cnt,reqs[i].require[j]);
+					}
 					cost = 0.5 * reqs[i].cnt;
 					ndh = net = ni = 0;
 					for(r = 0; r < strlen(reqs[i].require[j])-1; r++){
@@ -153,7 +158,7 @@ void facture(version* ver, int count){
 		}
 		k++;
 	}
-	printf("          Total : %.2f\n",total);
+	printf("                   Total :   %.2f\n",total);
 }
 
 
