@@ -12,6 +12,7 @@
 #include<fcntl.h>
 #include<sys/types.h>
 #include<sys/stat.h>
+#include<errno.h>
 #include "init.h"
 #include "config.h"
 
@@ -70,6 +71,26 @@ cook* init(){
 	}
 	return sum;
 }*/
+
+float find(char* sandwich, char* ingredient) {
+	float m;
+	int i, j, k;
+	int material[5] = {3, 4, 5, 5, 4};
+	cook* cook_list;
+	cook_list = init();
+	for(i = 0; i < 5; i++) {
+		if(strcmp(sandwich,cook_list[i].name) == 0) {
+			for(j = 0; j < material[i]; j++) {
+				if(strcmp(ingredient,cook_list[i].material[j].name) == 0) {
+					m = cook_list[i].material[j].num;
+					break;
+				}
+			}
+			break;
+		}
+	}
+	return m;
+}
 
 void facture(version* ver, int count){
 	cook* cook_list;
@@ -153,7 +174,22 @@ void inventaire(version* ver,int num){
 		{0.0,"steak"},
 		{0.0,"thon"}
 	};
-	ingredient add[]
+	
+	ingredient add[12] = {
+		{1.0,"pain"},
+		{1.0,"jambon"},
+		{10.0,"beurre"},
+		{10.0,"salade"},
+		{2.0,"emmental"},
+		{10.0,"ketchup"},
+		{10.0,"moutarde"},
+		{20.0,"mayonnaise"},
+		{50.0,"frites"},
+		{0.5,"tomate"},
+		{1.0,"steak"},
+		{50.0,"thon"}
+	};
+	
 	int n, i, j, k, r, count, sum;
 	
 	int material[5] = {3, 4, 5, 5, 4};
@@ -173,7 +209,7 @@ void inventaire(version* ver,int num){
 	//while(ver) {
 	int m, f;
 	m = 0;
-	while(m<num) {
+	while( m < num ) {
 		sum = 0;
 		f = 0;
 		while(/*ver->types*/ f < ver->num){
@@ -206,50 +242,43 @@ void inventaire(version* ver,int num){
 		for(i = 0; i < n/*n*/; i++) {
 			for(j = 0; j < reqs[i].num/*sizeof(reqs[i].require)*/; j++) {
 				if(strstr(reqs[i].require[j],"sans") != NULL || strstr(reqs[i].require[j],"avec") != NULL) {
-					n = sizeof(reqs[i].require[j]) - 5;
-					modingred = malloc(n * sizeof(char));
-					modingred = reqs[i].require[j] + 5;
-					if(strstr(modingred,"double") != NULL) {
-						modingred = modingred + 7;
+					if(strstr(reqs[i].require[j],"mais") != NULL) {
+						n = (int)sizeof(reqs[i].require[j]) - 10;
+						modingred = malloc(n * sizeof(char));
+						modingred = reqs[i].require[j] + 10;
 					}
+					else{
+						n = sizeof(reqs[i].require[j]) - 5;
+						modingred = malloc(n * sizeof(char));
+						modingred = reqs[i].require[j] + 5;	
+					}
+					/*if(strstr(modingred,"double") != NULL) {
+						modingred = modingred + 7;
+					}*/
 					     //printf("%s\n",modingred);
-					for(k = 0; k < 12; k++) {
-						if(strcmp(modingred,list[k].name) == 0) {
-							  //printf(" count %s %d\n",ver->type,count);
-							for(r = 0; r < count; r++){
-								if(strcmp(cur[r].name,modingred) == 0){
-									  //printf("cnt %d\n",reqs[i].cnt);
+					int l;
+					char* ingred;
+					l = 1;
+					for(r = 0; r < strlen(modingred) - 1; ){
+						for(k = 0; k < 12; k++) {
+							if(modingred[r] == list[k].name[0]) {
+								if(modingred[r+1] == list[k].name[1]) {
+									ingred = list[k].name;
+									l = strlen(list[k].name);
 									if(strstr(reqs[i].require[j],"sans") != NULL){
-										list[k].num = list[k].num - reqs[i].cnt * cur[r].num;
-										int ni, ndh, p;
-										ni = ndh = 0;
-										for(p = 0; p < strlen(reqs[i].require[j][p])-1; p++) {
-											if(reqs[i].require[j][p] == 'n'){
-												if(reqs[i].require[j][p+1] == 'i')
-													ni = ni + 1;
-											}
-											if(reqs[i].require[j][p] == ',')
-												ndh = ndh + 1;
-										}
-										list[k].num = list[k].num - reqs[i].cnt * cur[r].num * (ni + ndh);
+										list[k].num = list[k].num - reqs[i].cnt * find(ver->type,ingred);
 									}
 									else{
-										list[k].num = list[k].num + reqs[i].cnt * cur[r].num;
-										int ndh, net, q;
-										ndh = net = 0;
-										for(q = 0; q < strlen(reqs[i].require[j][q])-1; q++){
-											if(reqs[i].require[j][q] == ',')
-												ndh = ndh + 1;
-											if(reqs[i].require[j][q] == 'e') {
-												if(reqs[i].require[j][q] == 't')
-													net = net + 1;
-											}
-										} 
-										list[k].num = list[k].num + reqs[i].cnt * cur[r].num * (ndh + net);
+										list[k].num = list[k].num + reqs[i].cnt * add[k].num;
 									}
+									break;
 								}
-							}	
+							}
+							else{
+								l = 1;
+							}
 						}
+						r = r + l; 
 					}
 				}
 			}
@@ -264,14 +293,38 @@ void inventaire(version* ver,int num){
 }
 
 void cuisine(version* ver, int count) {
+	int a, b, c, d, num, m;
+	for(a = 0; a < count; a++) {
+		for(b = a + 1; b < count; b++) {
+			if(strcmp(ver[a].type,ver[b].type) == 0) {
+				num = ver[a].num;
+				ver[a].num = ver[a].num + ver[b].num;
+				ver[a].types = realloc(ver[a].types, ver[a].num * sizeof(kind));
+				for(c = 0; c < ver[b].num; c++) {
+					//ver[a].types[num+c] = malloc(sizeof(kind));
+					ver[a].types[num+c].cnt = ver[b].types[c].cnt;
+					ver[a].types[num+c].num = ver[b].types[c].num;
+					m = ver[b].types[c].num;
+					ver[a].types[num+c].require = malloc(m*sizeof(char*));
+					for(d = 0; d < m; d++) {
+						int len = strlen(ver[b].types[c].require[d]);
+				    	ver[a].types[num+c].require[d] = malloc(d*sizeof(char));
+						strcpy(ver[a].types[num+c].require[d], ver[b].types[c].require[d]);
+					}
+				}
+			}
+		}
+	}
+	
 	int stream;
-	if((stream = open("./cuisine.html", O_CREATE) == -1) {
-		printf("create fail!\n");
+	if((stream = open("cuisine.html", O_RDWR|O_TRUNC|O_CREAT, S_IRWXU)) == -1) {
+		printf("create fail:%s\n",strerror(errno));
 		exit(1);	
 	}
 	char buf[256] = "<html><head><title>Cuisine</title><body>";
-	if(write(stream, buf, strlen(buf) == -1) {
-		printf("write fail\n");
+	if(write(stream, buf, strlen(buf))== -1) {
+		printf("write fail:%s\n",strerror(errno));
+		exit(1);
 	}
 	int n = 0;
 	int i, j, k;
@@ -281,17 +334,36 @@ void cuisine(version* ver, int count) {
 		strcat(buf1, ver[n].type);
 		strcat(buf1, "</h1><ul>");
 		if(write(stream, buf1, strlen(buf1)) == -1) {
-			printf("write %s fail\n",ver[n].type);
+			printf("write %s fail:%s\n", ver[n].type, strerror(errno));
+			exit(1);
 		}
+		char buf2[256] = " ";
 		for(i = 0; i < ver[n].num; i++){
+			strcat(buf2, "<li>");
+			char tmp[20];
+			//itoa(ver[n].types[i].cnt, tmp, 10);
+			sprintf(tmp,"%d", ver[n].types[i].cnt);
+			strcat(buf2,tmp);
 			for(j = 0; j < ver[n].types[i].num; j++) {
-				char buf2[256] = "<li>";
-				strcat(buf2,itoa(ver[n].types[i].cnt));
 				strcat(buf2," ");
+				if(strcmp(ver[n].types[i].require[j], "") == 0 ) {
+					strcat(buf2, "normaux");
+				}
 				strcat(buf2,ver[n].types[i].require[j]);
-				strcat(buf2,"</li>");
 			}
+			strcat(buf2,"</li>");
 		}
+		strcat(buf2,"</ul>");
+		if(write(stream, buf2, strlen(buf2)) == -1) {
+			printf("write requires of %s fail:%s\n", ver[n].type, strerror(errno));
+			exit(1);
+		}
+		n++;
+	}
+	char buf3[256] = "</body></html>";
+	if(write(stream, buf3, strlen(buf3)) == -1) {
+		printf("write fail:%s\n",strerror(errno));
+		exit(1);
 	}
 }
 
@@ -316,8 +388,8 @@ int main() {
 	order[0].types[1].require = malloc(2 * sizeof(char*));
 	order[0].types[1].require[0] = malloc(20 * sizeof(char));
 	order[0].types[1].require[1] = malloc(20 * sizeof(char));
-	order[0].types[1].require[0] = "avec frites";
-	order[0].types[1].require[1] = "sans jambon";
+	order[0].types[1].require[0] = "avec frites, pain";
+	order[0].types[1].require[1] = "mais sans jambon";
 	order[0].types[1].cnt = 2;
 	order[0].types[1].num = 2;
 	//printf("1200000\n");
@@ -330,8 +402,8 @@ int main() {
 	order[1].types[1].require = malloc(2 * sizeof(char*));
 	order[1].types[1].require[0] = malloc(20 * sizeof(char));
 	order[1].types[1].require[1] = malloc(20 * sizeof(char));
-	order[1].types[1].require[0] = "sans steak";
-	order[1].types[1].require[1] = "avec double frites";
+	order[1].types[1].require[0] = "sans steak ni salade";
+	order[1].types[1].require[1] = "mais avec double frites";
 	order[1].types[1].cnt = 1;
 	order[1].types[1].num = 2;
 	//printf("2200000\n");
@@ -340,5 +412,6 @@ int main() {
 	//printf("lalala\n");
 	facture(order,2);
 	inventaire(order,2);
+	cuisine(order,2);
 	return 0;
 }
