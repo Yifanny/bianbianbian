@@ -75,7 +75,6 @@ cook* init(){
 float find(char* sandwich, char* ingredient) {
 	float m;
 	int i, j, k;
-	int material[5] = {3, 4, 5, 5, 4};
 	cook* cook_list;
 	cook_list = init();
 	for(i = 0; i < 5; i++) {

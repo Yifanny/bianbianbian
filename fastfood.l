@@ -53,7 +53,7 @@ TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 	return INGREDIENT;
 }
 
-"mais "("sans"|"avec") {
+"mais "("sans "|"avec "("double ")?) {
 	yylval.word = malloc((yyleng + 1) * sizeof(char));
 	yylval.word = strncpy(yylval.word, yytext, yyleng);
 	yylval.word[yyleng] = '\0';
@@ -61,7 +61,7 @@ TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 	return OPERATION;
 }
 
-", "|"sans "|"avec "("double ")?|"ni "|"et "("double ")?/{INGREDIENT} {
+", "("double ")?|"sans "|"avec "("double ")?|"ni "|"et "("double ")?/{INGREDIENT} {
 	yylval.word = malloc((yyleng + 1) * sizeof(char));
 	yylval.word = strncpy(yylval.word, yytext, yyleng);
 	yylval.word[yyleng] = '\0';

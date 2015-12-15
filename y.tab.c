@@ -108,7 +108,7 @@
 	void nshow(node* point);
 	cook* init();
 	ingredient* inventaire(version* ver,int num);
-	
+	cook* menu;
 	int count;
 
 
@@ -423,17 +423,17 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     4,     8,    12,    15,    17,    21,    24,
-      27,    31
+       0,     0,     3,     4,     8,    12,    15,    17,    22,    25,
+      28,    32
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
       12,     0,    -1,    -1,    12,    13,     9,    -1,    16,     7,
-      14,    -1,    16,    15,    -1,    16,    -1,    14,     7,    14,
-      -1,     4,    15,    -1,     6,     5,    -1,     6,     5,    15,
-      -1,     4,     3,    -1
+      14,    -1,    16,    15,    -1,    16,    -1,     4,    15,     7,
+      14,    -1,     4,    15,    -1,     6,     5,    -1,     6,     5,
+      15,    -1,     4,     3,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
@@ -475,7 +475,7 @@ static const yytype_uint8 yyr1[] =
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     0,     3,     3,     2,     1,     3,     2,     2,
+       0,     2,     0,     3,     3,     2,     1,     4,     2,     2,
        3,     2
 };
 
@@ -500,7 +500,7 @@ static const yytype_int8 yydefgoto[] =
 static const yytype_int8 yypact[] =
 {
       -7,     0,    -7,     4,    -1,    -5,    -7,    -7,    -2,     5,
-      -7,     6,     6,     3,    -7,    -7,     5,     3
+      -7,     6,     6,    -7,    -7,     3,     5,    -7
 };
 
 /* YYPGOTO[NTERM-NUM].  */
@@ -1391,7 +1391,7 @@ yyreduce:
   case 7:
 #line 76 "fastfood.y"
     {
-		(yyval.point) = combine_entities((yyvsp[(1) - (3)].point), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
+		(yyval.point) = combine_entities(create_entity((yyvsp[(1) - (4)].num), (yyvsp[(2) - (4)].point)), (yyvsp[(3) - (4)].word), (yyvsp[(4) - (4)].point));
 	}
     break;
 
@@ -1745,6 +1745,7 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 
  commandes add_requirement(commandes* cmd, node* req) {
 	 cmd->head.right = req;
+	 cmd->head.typenode = 4;
 	 
 	 return *cmd;
 	 
@@ -1770,13 +1771,44 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	 	nshow(point->right);
 	 }
  }
- 
+
+cook* init() {
+	int i;
+	cook* cook_list;
+	cook_list = malloc(5 * sizeof(cook));
+	cook_list[0].name = "fromage";
+	for(i = 0; i < sizeof(cook_fromage); i++){
+			cook_list[0].material[i] = cook_fromage[i];
+	}
+	cook_list[1].name = "jambon-beurre";
+	for(i = 0; i < sizeof(cook_jambon); i++){
+		cook_list[1].material[i] = cook_jambon[i];
+	}
+	cook_list[2].name = "panini";
+	for(i = 0; i < sizeof(cook_panini); i++){
+		cook_list[2].material[i] = cook_panini[i];
+	}
+	cook_list[3].name = "belge";
+	for(i = 0; i < sizeof(cook_belge); i++){
+		cook_list[3].material[i] = cook_belge[i];
+	}
+	cook_list[4].name = "dieppois";
+	for(i = 0; i < sizeof(cook_dieppois); i++){
+		cook_list[4].material[i] = cook_dieppois[i];
+	}
+	return cook_list;
+}
+
+
+
+
 void yyerror(char* s) {
 	fprintf(stderr, "%s\n", s);
 		
 }
 
 int main() {
+	menu = init();
 	yyparse();
 	return 0;
 }

@@ -20,7 +20,7 @@
  cook* init() {
 	int i;
 	cook* cook_list;
-	cook_list = malloc(5 * sizeof(cook));
+	cook_list = malloc(CNTSANDW * sizeof(cook));
 	cook_list[0].name = "fromage";
 	for(i = 0; i < sizeof(cook_fromage); i++){
 			cook_list[0].material[i] = cook_fromage[i];
@@ -44,3 +44,101 @@
 	return cook_list;
 }
 
+int check(char* ingredient, char* type) {
+	int i, j;
+	for (i = 0; i < CNTSANDW; i++) {
+		if (!strcmp(type, menu[i].name)) {
+			for (j = 0; j < material[i]; j++) {
+				if (!strcmp(ingredient, menu[i].material[j].name)) {
+					return 1;
+				}
+			}
+			return 0;
+		}
+	}
+}
+
+int verifie_commandes(node* point, char* type, char* opr, int cnt) {
+	int ret;
+	if (point != NULL) {
+		switch (point->typenode) {
+			case 0:
+				if ((ret = verifie_commandes(point->left, type, NULL, cnt)) >= 0) {
+					return verifie_commandes(point->right, type, NULL, ret);
+				}
+				else {
+					return -1;
+				}
+				break;
+			case 1:
+				if (cnt - point->content->num < 0) {
+					return -1;
+				}
+				else {
+					return cnt - point->content->num;
+				}
+				break;
+			case 2:
+				switch (opr) {
+					case "avec ":
+					case "mais avec ":
+						if (check(point->content.word, type)) {
+							return -1;
+						}
+						else {
+							return cnt;
+						}
+					case "sans ":
+					case "mais sans ":
+					case "avec double ":
+					case "mais avec double ":
+						if (check(point->content.word, type)) {
+							return cnt;
+						}
+						else {
+							return -1;
+						}
+				}
+				break;
+			case 3:
+				switch (point->content.word) {
+					case "avec ":
+					case "sans ":
+					case "avec double ":
+					case "mais avec ":
+					case "mais avec double ":
+					case "mais sans ":
+						if ((ret = verifie_commandes(point->left, type, point->content.word, cnt)) >= 0) {
+							return verifie_commandes(point->right, type, point->content.word, ret);
+						}
+						else {
+							return -1;
+						}
+					case "ni ":
+				   	case "et ":
+					case ", ":
+						if ((ret = verifie_commandes(point->left, type, opr, cnt)) >= 0) {
+							return verifie_commandes(point->right, type, opr, ret);
+						}
+						else {
+							return -1;
+						}
+					case "et double ":
+					case ", double ":
+						if (strstr(opr, avec) != NULL）{
+							if ((ret = verifie_commandes(point->left, type, avec_double, cnt)) >= 0) {
+								return verifie_commandes(point->right, opr, ret);
+							}
+							else {
+								return -1;
+							}
+						}
+						else {
+							return -1;
+						}
+					case default:
+						return -1;
+				}
+		}
+	}
+}

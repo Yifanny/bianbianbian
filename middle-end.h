@@ -3,7 +3,7 @@
 #include "init.h"
 #include "config.h" 
 
-void nprint(node* point);
+void nshow(node* point);
 cook* init();
 ingredient* inventaire(version* ver,int num);
 

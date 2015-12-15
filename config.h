@@ -1,3 +1,9 @@
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
+#define CNTSANDW 5
+
+int material[CNTSANDW] = {3, 4, 5, 5, 4};
+
 struct price {
 	char* name;
 	float euro;
@@ -5,7 +11,7 @@ struct price {
 
 typedef struct price price;
 
-price price_list[5] = {
+price price_list[CNTSANDW] = {
 	{"fromage",3.0},
 	{"jambon-beurre",4.0},
 	{"panini",5.0},
@@ -58,3 +64,7 @@ ingredient cook_dieppois[4] = {
 	{20.0,"mayonnaise"},
 	{10.0,"salade"}
 };
+
+char* avec = "avec";
+char* avec_double = "avec double ";
+#endif

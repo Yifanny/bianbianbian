@@ -1,5 +1,5 @@
-#ifndef _STRUCT_H_
-#define _STRUCT_H_
+#ifndef _INIT_H_
+#define _INIT_H_
 
 
 /***********************************************************/
