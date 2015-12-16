@@ -446,6 +446,7 @@ version transform(node* head, char* type) {
 	res.type = type;
 	res.types = collect_kind(head, res.types);
 	res.num = ret;
+	return res;
 }
 	
 
