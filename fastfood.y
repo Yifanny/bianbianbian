@@ -16,10 +16,12 @@
 	void nshow(node* point);
 	cook* init();
 	int check(char* ingredient, char* type);
-	int verifie_commandes(node* point, char* type, char* opr, int cnt);
+	int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat);
 	
 	cook* menu;
 	int count;
+	int ret;
+	char* tmp;
 %}
 %defines
 %union {
@@ -53,6 +55,17 @@ program: {
 	| program condition NEW {		
 		printf("%s, nice choice\n", sandwich[count - 1].type);
 		nshow(&sandwich[count - 1].head);
+		printf("henji\n");
+		if (!strcmp(fromage, sandwich[count - 1].type)) {
+			ret = verifie_commandes(&sandwich[count - 1].head, sandwich[count - 1].type, NULL, 2 * sandwich[count - 1].head.left->content.num, 0);
+		}
+		else {
+			ret = verifie_commandes(&sandwich[count - 1].head, sandwich[count - 1].type, NULL, 2 * sandwich[count - 1].head.left->content.num, 1);
+		}
+		printf("lalal: %d\n", ret);
+		if (ret < 0) {
+			yyerror("error input\n");
+		}
 		printf("waiting for the new command\n");
 
 	}
@@ -222,7 +235,7 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 		if (point->typenode == 1) {
 					printf("number: %d\n", point->content.num);
 		}
-		else {
+		else if (point->content.word != NULL) {
 			printf("%s\n", point->content.word);
 		}
 		
@@ -258,6 +271,7 @@ cook* init() {
 	return cook_list;
 }
 
+/* Return: 1 means exist, 0 means not exist */
 int check(char* ingredient, char* type) {
 	int i, j;
 	for (i = 0; i < CNTSANDW; i++) {
@@ -267,94 +281,118 @@ int check(char* ingredient, char* type) {
 					return 1;
 				}
 			}
-			return 0;
 		}
 	}
+	return 0;
 }
 
-int verifie_commandes(node* point, char* type, char* opr, int cnt) {
+
+int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) {
 	int ret;
 	if (point != NULL) {
 		switch (point->typenode) {
+			case 4:
 			case 0:
-				if ((ret = verifie_commandes(point->left, type, NULL, cnt)) >= 0) {
-					return verifie_commandes(point->right, type, NULL, ret);
+				if ((ret = verifie_commandes(point->left, type, NULL, cnt, is_meat)) >= 0) {
+					return verifie_commandes(point->right, type, NULL, ret, is_meat);
 				}
 				else {
 					return -1;
 				}
 				break;
 			case 1:
-				if (cnt - point->content->num < 0) {
+				printf("aaaa\n");
+				printf("cnt: %d, current: %d\n", cnt, point->content.num);
+				if (cnt - point->content.num < 0) {
 					return -1;
 				}
 				else {
-					return cnt - point->content->num;
+					return cnt - point->content.num;
 				}
 				break;
 			case 2:
-				switch (opr) {
-					case "avec ":
-					case "mais avec ":
-						if (check(point->content.word, type)) {
-							return -1;
-						}
-						else {
-							return cnt;
-						}
-					case "sans ":
-					case "mais sans ":
-					case "avec double ":
-					case "mais avec double ":
-						if (check(point->content.word, type)) {
-							return cnt;
-						}
-						else {
-							return -1;
-						}
-				}
-				break;
-			case 3:
-				switch (point->content.word) {
-					case "avec ":
-					case "sans ":
-					case "avec double ":
-					case "mais avec ":
-					case "mais avec double ":
-					case "mais sans ":
-						if ((ret = verifie_commandes(point->left, type, point->content.word, cnt)) >= 0) {
-							return verifie_commandes(point->right, type, point->content.word, ret);
-						}
-						else {
-							return -1;
-						}
-					case "ni ":
-				   	case "et ":
-					case ", ":
-						if ((ret = verifie_commandes(point->left, type, opr, cnt)) >= 0) {
-							return verifie_commandes(point->right, type, opr, ret);
-						}
-						else {
-							return -1;
-						}
-					case "et double ":
-					case ", double ":
-						if (strstr(opr, avec) != NULL）{
-							if ((ret = verifie_commandes(point->left, type, avec_double, cnt)) >= 0) {
-								return verifie_commandes(point->right, opr, ret);
-							}
-							else {
-								return -1;
-							}
-						}
-						else {
-							return -1;
-						}
-					case default:
+				ret = check(point->content.word, type);
+				tmp = point->content.word;
+				if (!strcmp(opr, avec) || !strcmp(opr, mais_avec)) {
+					printf("entering\n");
+					printf("now: %d\n", ret);
+					if (ret) {
 						return -1;
+					}
+					else if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
+						if (is_meat) {
+							return -1;
+						}
+						else {
+							is_meat = 1;
+							return cnt;
+						}
+					}
+				}
+				else if (!strcmp(opr, sans) || !strcmp(opr, mais_sans)) {
+					if (ret) {
+						if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
+							is_meat = 0;
+							return cnt;
+						}
+						else {
+							return cnt;
+						}
+					}
+					else {
+						return -1;
+					}
+				}
+				else if (!strcmp(opr, avec_double) || !strcmp(opr, mais_avec_double)) {
+					if (ret) {
+						if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
+							return -1;
+						}
+						else {
+							return cnt;
+						}
+					}
+				}
+				else {
+					return -1;
+				}
+			case 3:
+				if (!strcmp(point->content.word, sans) || !strcmp(point->content.word, mais_sans) || !strcmp(point->content.word, avec_double) || 
+					!strcmp(point->content.word, mais_avec_double) || !strcmp(point->content.word, avec) || !strcmp(point->content.word, mais_avec)) {
+					if ((ret = verifie_commandes(point->left, type, point->content.word, cnt, is_meat)) >= 0) {
+						return verifie_commandes(point->right, type, point->content.word, ret, is_meat);
+					}
+					else {
+						return -1;
+					}
+				}
+				else if (!strcmp(point->content.word, ni) || !strcmp(point->content.word, et) || !strcmp(point->content.word, comma)) {
+					if ((ret = verifie_commandes(point->left, type, opr, cnt, is_meat)) >= 0) {
+						return verifie_commandes(point->right, type, opr, ret, is_meat);
+					}
+					else {
+						return -1;
+					}
+				}
+				else if (!strcmp(point->content.word, et_double) || !strcmp(point->content.word, comma_double)) {
+					if (strstr(opr, avec) != NULL) {
+						if ((ret = verifie_commandes(point->left, type, avec_double, cnt, is_meat)) >= 0) {
+							return verifie_commandes(point->right, type, opr, ret, is_meat);
+						}
+						else {
+							return -1;
+						}
+					}
+					else {
+						return -1;
+					}
+				}
+				else {
+					return -1;
 				}
 		}
 	}
+	return cnt;
 }
 
 

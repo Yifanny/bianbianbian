@@ -142,3 +142,4 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt) {
 		}
 	}
 }
+

@@ -65,6 +65,19 @@ ingredient cook_dieppois[4] = {
 	{10.0,"salade"}
 };
 
-char* avec = "avec";
+char* avec = "avec ";
 char* avec_double = "avec double ";
+char* mais_avec_double = "mais avec double ";
+char* mais_avec = "mais avec ";
+char* sans = "sans ";
+char* mais_sans = "mais sans ";
+char* ni = "ni ";
+char* et = "et ";
+char* comma = ", ";
+char* et_double = "et double ";
+char* comma_double = ", double ";
+char* jambon = "jambon";
+char* thon = "thon";
+char* steak = "steak";
+char* fromage = "fromage";
 #endif

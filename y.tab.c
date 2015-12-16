@@ -94,6 +94,7 @@
 
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include <string.h>
 	#include "init.h"
 	#include "config.h"
 	int yylex(void);
@@ -107,9 +108,13 @@
 	commandes add_condition(commandes* cmd, char* spl, node* cons);
 	void nshow(node* point);
 	cook* init();
-	ingredient* inventaire(version* ver,int num);
+	int check(char* ingredient, char* type);
+	int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat);
+	
 	cook* menu;
 	int count;
+	int ret;
+	char* tmp;
 
 
 /* Enabling traces.  */
@@ -132,7 +137,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 22 "fastfood.y"
+#line 27 "fastfood.y"
 {
 	int num;
 	char* word;
@@ -140,7 +145,7 @@ typedef union YYSTYPE
 	struct commandes* cmd;
 }
 /* Line 193 of yacc.c.  */
-#line 144 "y.tab.c"
+#line 149 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -153,7 +158,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 157 "y.tab.c"
+#line 162 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -439,8 +444,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    47,    47,    50,    59,    65,    69,    76,    79,    85,
-      88,    94
+       0,    52,    52,    55,    75,    81,    85,    92,    95,   101,
+     104,   110
 };
 #endif
 
@@ -1346,24 +1351,35 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 47 "fastfood.y"
+#line 52 "fastfood.y"
     {
 		printf("waiting for the new command\n");
 	}
     break;
 
   case 3:
-#line 50 "fastfood.y"
+#line 55 "fastfood.y"
     {		
 		printf("%s, nice choice\n", sandwich[count - 1].type);
 		nshow(&sandwich[count - 1].head);
+		printf("henji\n");
+		if (!strcmp(fromage, sandwich[count - 1].type)) {
+			ret = verifie_commandes(&sandwich[count - 1].head, sandwich[count - 1].type, NULL, 2 * sandwich[count - 1].head.left->content.num, 0);
+		}
+		else {
+			ret = verifie_commandes(&sandwich[count - 1].head, sandwich[count - 1].type, NULL, 2 * sandwich[count - 1].head.left->content.num, 1);
+		}
+		printf("lalal: %d\n", ret);
+		if (ret < 0) {
+			yyerror("error input\n");
+		}
 		printf("waiting for the new command\n");
 
 	}
     break;
 
   case 4:
-#line 59 "fastfood.y"
+#line 75 "fastfood.y"
     {
 		printf("require are %s\n", sandwich[count - 1].type);
 		sandwich[count - 1] = add_condition((yyvsp[(1) - (3)].cmd), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
@@ -1373,7 +1389,7 @@ yyreduce:
     break;
 
   case 5:
-#line 65 "fastfood.y"
+#line 81 "fastfood.y"
     {
 		sandwich[count - 1] = add_requirement((yyvsp[(1) - (2)].cmd), (yyvsp[(2) - (2)].point));
 		(yyval.cmd) = &sandwich[count - 1];
@@ -1381,7 +1397,7 @@ yyreduce:
     break;
 
   case 6:
-#line 69 "fastfood.y"
+#line 85 "fastfood.y"
     {
 		(yyval.cmd) = (yyvsp[(1) - (1)].cmd);
 		printf("No %d: order finish\n", count);
@@ -1389,35 +1405,35 @@ yyreduce:
     break;
 
   case 7:
-#line 76 "fastfood.y"
+#line 92 "fastfood.y"
     {
 		(yyval.point) = combine_entities(create_entity((yyvsp[(1) - (4)].num), (yyvsp[(2) - (4)].point)), (yyvsp[(3) - (4)].word), (yyvsp[(4) - (4)].point));
 	}
     break;
 
   case 8:
-#line 79 "fastfood.y"
+#line 95 "fastfood.y"
     {
 		(yyval.point) = create_entity((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].point));
 	}
     break;
 
   case 9:
-#line 85 "fastfood.y"
+#line 101 "fastfood.y"
     {
 		(yyval.point) = create_ingredient((yyvsp[(1) - (2)].word), (yyvsp[(2) - (2)].word));
 	}
     break;
 
   case 10:
-#line 88 "fastfood.y"
+#line 104 "fastfood.y"
     {
 		(yyval.point) = create_ingredients((yyvsp[(1) - (3)].word), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 	}
     break;
 
   case 11:
-#line 94 "fastfood.y"
+#line 110 "fastfood.y"
     {
 		printf("%s\n", (yyvsp[(2) - (2)].word));
 		if (count) {
@@ -1436,7 +1452,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1440 "y.tab.c"
+#line 1456 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1650,7 +1666,7 @@ yyreturn:
 }
 
 
-#line 110 "fastfood.y"
+#line 126 "fastfood.y"
 
 
 
@@ -1763,7 +1779,7 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 		if (point->typenode == 1) {
 					printf("number: %d\n", point->content.num);
 		}
-		else {
+		else if (point->content.word != NULL) {
 			printf("%s\n", point->content.word);
 		}
 		
@@ -1799,6 +1815,129 @@ cook* init() {
 	return cook_list;
 }
 
+/* Return: 1 means exist, 0 means not exist */
+int check(char* ingredient, char* type) {
+	int i, j;
+	for (i = 0; i < CNTSANDW; i++) {
+		if (!strcmp(type, menu[i].name)) {
+			for (j = 0; j < material[i]; j++) {
+				if (!strcmp(ingredient, menu[i].material[j].name)) {
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+
+int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) {
+	int ret;
+	if (point != NULL) {
+		switch (point->typenode) {
+			case 4:
+			case 0:
+				if ((ret = verifie_commandes(point->left, type, NULL, cnt, is_meat)) >= 0) {
+					return verifie_commandes(point->right, type, NULL, ret, is_meat);
+				}
+				else {
+					return -1;
+				}
+				break;
+			case 1:
+				printf("aaaa\n");
+				printf("cnt: %d, current: %d\n", cnt, point->content.num);
+				if (cnt - point->content.num < 0) {
+					return -1;
+				}
+				else {
+					return cnt - point->content.num;
+				}
+				break;
+			case 2:
+				ret = check(point->content.word, type);
+				tmp = point->content.word;
+				if (!strcmp(opr, avec) || !strcmp(opr, mais_avec)) {
+					printf("entering\n");
+					printf("now: %d\n", ret);
+					if (ret) {
+						return -1;
+					}
+					else if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
+						if (is_meat) {
+							return -1;
+						}
+						else {
+							is_meat = 1;
+							return cnt;
+						}
+					}
+				}
+				else if (!strcmp(opr, sans) || !strcmp(opr, mais_sans)) {
+					if (ret) {
+						if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
+							is_meat = 0;
+							return cnt;
+						}
+						else {
+							return cnt;
+						}
+					}
+					else {
+						return -1;
+					}
+				}
+				else if (!strcmp(opr, avec_double) || !strcmp(opr, mais_avec_double)) {
+					if (ret) {
+						if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
+							return -1;
+						}
+						else {
+							return cnt;
+						}
+					}
+				}
+				else {
+					return -1;
+				}
+			case 3:
+				if (!strcmp(point->content.word, sans) || !strcmp(point->content.word, mais_sans) || !strcmp(point->content.word, avec_double) || 
+					!strcmp(point->content.word, mais_avec_double) || !strcmp(point->content.word, avec) || !strcmp(point->content.word, mais_avec)) {
+					if ((ret = verifie_commandes(point->left, type, point->content.word, cnt, is_meat)) >= 0) {
+						return verifie_commandes(point->right, type, point->content.word, ret, is_meat);
+					}
+					else {
+						return -1;
+					}
+				}
+				else if (!strcmp(point->content.word, ni) || !strcmp(point->content.word, et) || !strcmp(point->content.word, comma)) {
+					if ((ret = verifie_commandes(point->left, type, opr, cnt, is_meat)) >= 0) {
+						return verifie_commandes(point->right, type, opr, ret, is_meat);
+					}
+					else {
+						return -1;
+					}
+				}
+				else if (!strcmp(point->content.word, et_double) || !strcmp(point->content.word, comma_double)) {
+					if (strstr(opr, avec) != NULL) {
+						if ((ret = verifie_commandes(point->left, type, avec_double, cnt, is_meat)) >= 0) {
+							return verifie_commandes(point->right, type, opr, ret, is_meat);
+						}
+						else {
+							return -1;
+						}
+					}
+					else {
+						return -1;
+					}
+				}
+				else {
+					return -1;
+				}
+		}
+	}
+	return cnt;
+}
 
 
 
