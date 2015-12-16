@@ -395,7 +395,59 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 	return cnt;
 }
 
+char** collect_require(node* point, char** res) {
+	if (point != NULL) {
+		tmp = point->content.word;
+		if (!strstr(tmp, avec) || !strstr(tmp, sans) {
+			res[ret] = strcat(res[length], tmp);
+			res[ret] = strcat(res[ret], point->left->content->word);
+			ret++;
+		}
+		else {
+			res[ret - 1] = strcat(res[ret - 1], tmp);
+			res[ret - 1] = strcat(res[ret - 1], point->left->content->word);
+		}
+		return collect_require(point->right, res);
+	}
+	return res;
+	
+} 
 
+kind make_kind(node* head) {
+	kind res;
+	char** result = NULL;
+	ret = 0;
+	res.cnt = head->left->content.num;
+	res.require = collect_require(head->right, result);
+	res.num = ret;
+	return res;
+}
+
+kind* collect_kind(node* point, kind* res) {
+	kind ans;
+	if (point->typenode == 4) {
+		ans = make_kind(point);
+		res = realloc(res, (ret + 1) * sizeof(kind));
+		res[ret] = ans;
+		ret++;
+		return res;
+	}
+	else if (point->typenode == 0) {
+		ans = collect_kind(point->left, res);
+		return collect_kind(point->right, ans);
+	}
+	return res;
+}
+
+version transform(node* head, char* type) {
+	version res;
+	ret = 0;
+	res.types = NULL;
+	res.type = type;
+	res.types = collect_kind(head, res.types);
+	res.num = ret;
+}
+	
 
 void yyerror(char* s) {
 	fprintf(stderr, "%s\n", s);
