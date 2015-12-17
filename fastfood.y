@@ -17,10 +17,18 @@
 	cook* init();
 	int check(char* ingredient, char* type);
 	int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat);
+	char** collect_require(node* point, char** res, char* opr);
+	kind make_kind(node* head);
+	kind* collect_kind(node* point, kind* res);
+	version transform(node* head, char* type);
+	ingredient* ingredient_list(version* ver,int num);
+	version* combien_version(version* ver, int count);
+	void pshow(version* v);
 	
 	cook* menu;
 	int count;
 	int ret;
+	int i;
 	char* tmp;
 %}
 %defines
@@ -66,6 +74,10 @@ program: {
 		if (ret < 0) {
 			yyerror("error input\n");
 		}
+		
+		order = malloc(count * sizeof(version));
+		
+		
 		printf("waiting for the new command\n");
 
 	}
@@ -395,19 +407,26 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 	return cnt;
 }
 
-char** collect_require(node* point, char** res) {
+char** collect_require(node* point, char** res, char* opr) {
 	if (point != NULL) {
 		tmp = point->content.word;
-		if (!strstr(tmp, avec) || !strstr(tmp, sans) {
-			res[ret] = strcat(res[length], tmp);
-			res[ret] = strcat(res[ret], point->left->content->word);
+		if (!strstr(tmp, avec)) {	
+			res[0] = strcat(res[0], tmp);
+			res[0] = strcat(res[0], point->left->content.word);
 			ret++;
+			opr = avec;
+		}
+		else if (!strstr(tmp, sans)) {
+			res[1] = strcat(res[1], tmp);
+			res[1] = strcat(res[1], point->left->content.word);
+			ret++;
+			opr = sans;
 		}
 		else {
-			res[ret - 1] = strcat(res[ret - 1], tmp);
-			res[ret - 1] = strcat(res[ret - 1], point->left->content->word);
+			res[!strcmp(opr, avec)?0:1] = strcat(res[!strcmp(opr, avec)?0:1], tmp);
+			res[!strcmp(opr, avec)?0:1] = strcat(res[!strcmp(opr, avec)?0:1], point->left->content.word);
 		}
-		return collect_require(point->right, res);
+		return collect_require(point->right, res, opr);
 	}
 	return res;
 	
@@ -418,7 +437,7 @@ kind make_kind(node* head) {
 	char** result = NULL;
 	ret = 0;
 	res.cnt = head->left->content.num;
-	res.require = collect_require(head->right, result);
+	res.require = collect_require(head->right, result, head->right->content.word);
 	res.num = ret;
 	return res;
 }
@@ -433,8 +452,8 @@ kind* collect_kind(node* point, kind* res) {
 		return res;
 	}
 	else if (point->typenode == 0) {
-		ans = collect_kind(point->left, res);
-		return collect_kind(point->right, ans);
+		ans = *collect_kind(point->left, res);
+		return collect_kind(point->right, &ans);
 	}
 	return res;
 }
@@ -449,6 +468,175 @@ version transform(node* head, char* type) {
 	return res;
 }
 	
+/*
+ingredient* ingredient_list(version* ver,int num) {
+	cook* cook_list;
+	cook_list = init();
+	ingredient list[12] = {
+		{0.0,"pain"},
+		{0.0,"jambon"},
+		{0.0,"beurre"},
+		{0.0,"salade"},
+		{0.0,"emmental"},
+		{0.0,"ketchup"},
+		{0.0,"moutarde"},
+		{0.0,"mayonnaise"},
+		{0.0,"frites"},
+		{0.0,"tomate"},
+		{0.0,"steak"},
+		{0.0,"thon"}
+	};
+	
+	ingredient add[12] = {
+		{1.0,"pain"},
+		{1.0,"jambon"},
+		{10.0,"beurre"},
+		{10.0,"salade"},
+		{2.0,"emmental"},
+		{10.0,"ketchup"},
+		{10.0,"moutarde"},
+		{20.0,"mayonnaise"},
+		{50.0,"frites"},
+		{0.5,"tomate"},
+		{1.0,"steak"},
+		{50.0,"thon"}
+	};
+	
+	int n, i, j, k, r, count, sum;
+	
+	int material[5] = {3, 4, 5, 5, 4};
+	char** sandwich;
+	ingredient* cur;
+	char* modingred;
+	int m, f;
+	
+	sandwich = malloc(5 * sizeof(char*));
+	for(i = 0; i < 5; i++){
+		sandwich[i] = malloc(20 * sizeof(char));
+	}
+	sandwich[0] = "fromage";
+	sandwich[1] = "jambon-beurre";
+	sandwich[2] = "panini";
+	sandwich[3] = "belge";
+	sandwich[4] = "deippois";
+	
+
+	m = 0;
+	while( m < num ) {
+		sum = 0;
+		f = 0;
+		while(f < ver->num){
+			//printf(" sum %d\n",sum);
+			sum = sum + ver->types[f].cnt;;
+			f++;
+		}
+		for (i = 0; i < 5; i++) {
+			if(strcmp(ver->type,cook_list[i].name) == 0) {
+				count = material[i];
+				cur = malloc(count * sizeof(ingredient));
+				for(r = 0; r < count; r++){
+					cur[r] = cook_list[i].material[r];
+				}
+				for(j = 0; j < material[i]; j++){
+					for(k = 0; k < 12; k++) {
+						if(strcmp(list[k].name,cook_list[i].material[j].name) == 0){
+							list[k].num = list[k].num + sum * cook_list[i].material[j].num;
+						}
+					}	
+				}
+				break;
+			}
+		}
+		kind* reqs;
+		n = ver->num;
+		reqs = malloc(n * sizeof(kind));
+		reqs = ver->types;
+		for(i = 0; i < n; i++) {
+			for(j = 0; j < reqs[i].num; j++) {
+				if(strstr(reqs[i].require[j],"sans") != NULL || strstr(reqs[i].require[j],"avec") != NULL) {
+					if(strstr(reqs[i].require[j],"mais") != NULL) {
+						n = (int)sizeof(reqs[i].require[j]) - 10;
+						modingred = malloc(n * sizeof(char));
+						modingred = reqs[i].require[j] + 10;
+					}
+					else{
+						n = sizeof(reqs[i].require[j]) - 5;
+						modingred = malloc(n * sizeof(char));
+						modingred = reqs[i].require[j] + 5;	
+					}
+					int l;
+					char* ingred;
+					l = 1;
+					for(r = 0; r < strlen(modingred) - 1; ){
+						for(k = 0; k < 12; k++) {
+							if(modingred[r] == list[k].name[0]) {
+								if(modingred[r+1] == list[k].name[1]) {
+									ingred = list[k].name;
+									l = strlen(list[k].name);
+									if(strstr(reqs[i].require[j],"sans") != NULL){
+										list[k].num = list[k].num - reqs[i].cnt * find(ver->type,ingred);
+									}
+									else{
+										list[k].num = list[k].num + reqs[i].cnt * add[k].num;
+									}
+									break;
+								}
+							}
+							else{
+								l = 1;
+							}
+						}
+						r = r + l; 
+					}
+				}
+			}
+		}
+		m++;
+		ver++;
+	}
+	return list;
+}
+*/
+
+version* combien_version(version* ver, int count) {
+	int a, b, c, d, num, m;
+	for(a = 0; a < count; a++) {
+		for(b = a + 1; b < count; b++) {
+			if(strcmp(ver[a].type,ver[b].type) == 0) {
+				num = ver[a].num;
+				ver[a].num = ver[a].num + ver[b].num;
+				ver[a].types = realloc(ver[a].types, ver[a].num * sizeof(kind));
+				for(c = 0; c < ver[b].num; c++) {
+					//ver[a].types[num+c] = malloc(sizeof(kind));
+					ver[a].types[num+c].cnt = ver[b].types[c].cnt;
+					ver[a].types[num+c].num = ver[b].types[c].num;
+					m = ver[b].types[c].num;
+					ver[a].types[num+c].require = malloc(m*sizeof(char*));
+					for(d = 0; d < m; d++) {
+						int len = strlen(ver[b].types[c].require[d]);
+				    	ver[a].types[num+c].require[d] = malloc(d*sizeof(char));
+						strcpy(ver[a].types[num+c].require[d], ver[b].types[c].require[d]);
+					}
+				}
+			}
+		}
+	}
+	return ver;
+}
+
+void pshow(version* vlist）{
+	int i, j, k;
+	for (i = 0; i < count; i++) {
+		prinf("%type is : %s\n", vlist[i].type);
+		for (j = 0; j < vlist[i].num; j++ ) {
+			printf("     %d: ", vlist[i].types[j].cnt);
+			for (k = 0; k < vlist[i].types[j].num; k++) {
+				printf(" %s ", vlist[i].types[j].require[k]);
+			}
+			printf("\n");
+		}
+	}
+}
 
 void yyerror(char* s) {
 	fprintf(stderr, "%s\n", s);

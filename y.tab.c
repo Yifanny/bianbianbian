@@ -110,6 +110,12 @@
 	cook* init();
 	int check(char* ingredient, char* type);
 	int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat);
+	char** collect_require(node* point, char** res, char* opr);
+	kind make_kind(node* head);
+	kind* collect_kind(node* point, kind* res);
+	version transform(node* head, char* type);
+	ingredient* ingredient_list(version* ver,int num);
+	version* combien_version(version* ver, int count);
 	
 	cook* menu;
 	int count;
@@ -137,7 +143,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 27 "fastfood.y"
+#line 33 "fastfood.y"
 {
 	int num;
 	char* word;
@@ -145,7 +151,7 @@ typedef union YYSTYPE
 	struct commandes* cmd;
 }
 /* Line 193 of yacc.c.  */
-#line 149 "y.tab.c"
+#line 155 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -158,7 +164,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 162 "y.tab.c"
+#line 168 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -444,8 +450,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    52,    52,    55,    75,    81,    85,    92,    95,   101,
-     104,   110
+       0,    58,    58,    61,    81,    87,    91,    98,   101,   107,
+     110,   116
 };
 #endif
 
@@ -1351,14 +1357,14 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 52 "fastfood.y"
+#line 58 "fastfood.y"
     {
 		printf("waiting for the new command\n");
 	}
     break;
 
   case 3:
-#line 55 "fastfood.y"
+#line 61 "fastfood.y"
     {		
 		printf("%s, nice choice\n", sandwich[count - 1].type);
 		nshow(&sandwich[count - 1].head);
@@ -1379,7 +1385,7 @@ yyreduce:
     break;
 
   case 4:
-#line 75 "fastfood.y"
+#line 81 "fastfood.y"
     {
 		printf("require are %s\n", sandwich[count - 1].type);
 		sandwich[count - 1] = add_condition((yyvsp[(1) - (3)].cmd), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
@@ -1389,7 +1395,7 @@ yyreduce:
     break;
 
   case 5:
-#line 81 "fastfood.y"
+#line 87 "fastfood.y"
     {
 		sandwich[count - 1] = add_requirement((yyvsp[(1) - (2)].cmd), (yyvsp[(2) - (2)].point));
 		(yyval.cmd) = &sandwich[count - 1];
@@ -1397,7 +1403,7 @@ yyreduce:
     break;
 
   case 6:
-#line 85 "fastfood.y"
+#line 91 "fastfood.y"
     {
 		(yyval.cmd) = (yyvsp[(1) - (1)].cmd);
 		printf("No %d: order finish\n", count);
@@ -1405,35 +1411,35 @@ yyreduce:
     break;
 
   case 7:
-#line 92 "fastfood.y"
+#line 98 "fastfood.y"
     {
 		(yyval.point) = combine_entities(create_entity((yyvsp[(1) - (4)].num), (yyvsp[(2) - (4)].point)), (yyvsp[(3) - (4)].word), (yyvsp[(4) - (4)].point));
 	}
     break;
 
   case 8:
-#line 95 "fastfood.y"
+#line 101 "fastfood.y"
     {
 		(yyval.point) = create_entity((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].point));
 	}
     break;
 
   case 9:
-#line 101 "fastfood.y"
+#line 107 "fastfood.y"
     {
 		(yyval.point) = create_ingredient((yyvsp[(1) - (2)].word), (yyvsp[(2) - (2)].word));
 	}
     break;
 
   case 10:
-#line 104 "fastfood.y"
+#line 110 "fastfood.y"
     {
 		(yyval.point) = create_ingredients((yyvsp[(1) - (3)].word), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 	}
     break;
 
   case 11:
-#line 110 "fastfood.y"
+#line 116 "fastfood.y"
     {
 		printf("%s\n", (yyvsp[(2) - (2)].word));
 		if (count) {
@@ -1452,7 +1458,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1456 "y.tab.c"
+#line 1462 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1666,7 +1672,7 @@ yyreturn:
 }
 
 
-#line 126 "fastfood.y"
+#line 132 "fastfood.y"
 
 
 
@@ -1939,7 +1945,221 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 	return cnt;
 }
 
+char** collect_require(node* point, char** res, char* opr) {
+	if (point != NULL) {
+		tmp = point->content.word;
+		if (!strstr(tmp, avec)) {	
+			res[0] = strcat(res[0], tmp);
+			res[0] = strcat(res[0], point->left->content.word);
+			ret++;
+			opr = avec;
+		}
+		else if (!strstr(tmp, sans)) {
+			res[1] = strcat(res[1], tmp);
+			res[1] = strcat(res[1], point->left->content.word);
+			ret++;
+			opr = sans;
+		}
+		else {
+			res[!strcmp(opr, avec)?0:1] = strcat(res[!strcmp(opr, avec)?0:1], tmp);
+			res[!strcmp(opr, avec)?0:1] = strcat(res[!strcmp(opr, avec)?0:1], point->left->content.word);
+		}
+		return collect_require(point->right, res, opr);
+	}
+	return res;
+	
+} 
 
+kind make_kind(node* head) {
+	kind res;
+	char** result = NULL;
+	ret = 0;
+	res.cnt = head->left->content.num;
+	res.require = collect_require(head->right, result, head->right->content.word);
+	res.num = ret;
+	return res;
+}
+
+kind* collect_kind(node* point, kind* res) {
+	kind ans;
+	if (point->typenode == 4) {
+		ans = make_kind(point);
+		res = realloc(res, (ret + 1) * sizeof(kind));
+		res[ret] = ans;
+		ret++;
+		return res;
+	}
+	else if (point->typenode == 0) {
+		ans = *collect_kind(point->left, res);
+		return collect_kind(point->right, &ans);
+	}
+	return res;
+}
+
+version transform(node* head, char* type) {
+	version res;
+	ret = 0;
+	res.types = NULL;
+	res.type = type;
+	res.types = collect_kind(head, res.types);
+	res.num = ret;
+	return res;
+}
+	
+/*
+ingredient* ingredient_list(version* ver,int num) {
+	cook* cook_list;
+	cook_list = init();
+	ingredient list[12] = {
+		{0.0,"pain"},
+		{0.0,"jambon"},
+		{0.0,"beurre"},
+		{0.0,"salade"},
+		{0.0,"emmental"},
+		{0.0,"ketchup"},
+		{0.0,"moutarde"},
+		{0.0,"mayonnaise"},
+		{0.0,"frites"},
+		{0.0,"tomate"},
+		{0.0,"steak"},
+		{0.0,"thon"}
+	};
+	
+	ingredient add[12] = {
+		{1.0,"pain"},
+		{1.0,"jambon"},
+		{10.0,"beurre"},
+		{10.0,"salade"},
+		{2.0,"emmental"},
+		{10.0,"ketchup"},
+		{10.0,"moutarde"},
+		{20.0,"mayonnaise"},
+		{50.0,"frites"},
+		{0.5,"tomate"},
+		{1.0,"steak"},
+		{50.0,"thon"}
+	};
+	
+	int n, i, j, k, r, count, sum;
+	
+	int material[5] = {3, 4, 5, 5, 4};
+	char** sandwich;
+	sandwich = malloc(5 * sizeof(char*));
+	for(i = 0; i < 5; i++){
+		sandwich[i] = malloc(20 * sizeof(char));
+	}
+	sandwich[0] = "fromage";
+	sandwich[1] = "jambon-beurre";
+	sandwich[2] = "panini";
+	sandwich[3] = "belge";
+	sandwich[4] = "deippois";
+	
+	ingredient* cur;
+	char* modingred;
+	//while(ver) {
+	int m, f;
+	m = 0;
+	while( m < num ) {
+		sum = 0;
+		f = 0;
+		while(f < ver->num){
+			//printf(" sum %d\n",sum);
+			sum = sum + ver->types[f].cnt;;
+			f++;
+		}
+		for (i = 0; i < 5; i++) {
+			if(strcmp(ver->type,cook_list[i].name) == 0) {
+				count = material[i];
+				cur = malloc(count * sizeof(ingredient));
+				for(r = 0; r < count; r++){
+					cur[r] = cook_list[i].material[r];
+				}
+				for(j = 0; j < material[i]; j++){
+					for(k = 0; k < 12; k++) {
+						if(strcmp(list[k].name,cook_list[i].material[j].name) == 0){
+							list[k].num = list[k].num + sum * cook_list[i].material[j].num;
+						}
+					}	
+				}
+				break;
+			}
+		}
+		kind* reqs;
+		n = ver->num;
+		reqs = malloc(n * sizeof(kind));
+		reqs = ver->types;
+		for(i = 0; i < n; i++) {
+			for(j = 0; j < reqs[i].num; j++) {
+				if(strstr(reqs[i].require[j],"sans") != NULL || strstr(reqs[i].require[j],"avec") != NULL) {
+					if(strstr(reqs[i].require[j],"mais") != NULL) {
+						n = (int)sizeof(reqs[i].require[j]) - 10;
+						modingred = malloc(n * sizeof(char));
+						modingred = reqs[i].require[j] + 10;
+					}
+					else{
+						n = sizeof(reqs[i].require[j]) - 5;
+						modingred = malloc(n * sizeof(char));
+						modingred = reqs[i].require[j] + 5;	
+					}
+					int l;
+					char* ingred;
+					l = 1;
+					for(r = 0; r < strlen(modingred) - 1; ){
+						for(k = 0; k < 12; k++) {
+							if(modingred[r] == list[k].name[0]) {
+								if(modingred[r+1] == list[k].name[1]) {
+									ingred = list[k].name;
+									l = strlen(list[k].name);
+									if(strstr(reqs[i].require[j],"sans") != NULL){
+										list[k].num = list[k].num - reqs[i].cnt * find(ver->type,ingred);
+									}
+									else{
+										list[k].num = list[k].num + reqs[i].cnt * add[k].num;
+									}
+									break;
+								}
+							}
+							else{
+								l = 1;
+							}
+						}
+						r = r + l; 
+					}
+				}
+			}
+		}
+		m++;
+		ver++;
+	}
+	return list;
+}
+*/
+
+version* combien_version(version* ver, int count) {
+	int a, b, c, d, num, m;
+	for(a = 0; a < count; a++) {
+		for(b = a + 1; b < count; b++) {
+			if(strcmp(ver[a].type,ver[b].type) == 0) {
+				num = ver[a].num;
+				ver[a].num = ver[a].num + ver[b].num;
+				ver[a].types = realloc(ver[a].types, ver[a].num * sizeof(kind));
+				for(c = 0; c < ver[b].num; c++) {
+					//ver[a].types[num+c] = malloc(sizeof(kind));
+					ver[a].types[num+c].cnt = ver[b].types[c].cnt;
+					ver[a].types[num+c].num = ver[b].types[c].num;
+					m = ver[b].types[c].num;
+					ver[a].types[num+c].require = malloc(m*sizeof(char*));
+					for(d = 0; d < m; d++) {
+						int len = strlen(ver[b].types[c].require[d]);
+				    	ver[a].types[num+c].require[d] = malloc(d*sizeof(char));
+						strcpy(ver[a].types[num+c].require[d], ver[b].types[c].require[d]);
+					}
+				}
+			}
+		}
+	}
+	return ver;
+}
 
 void yyerror(char* s) {
 	fprintf(stderr, "%s\n", s);
