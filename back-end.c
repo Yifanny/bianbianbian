@@ -20,7 +20,8 @@
  * which include the name of a sandwich and a list of its neccessary ingredients
  * for each type of sandwich, the ingredients for this sandwich 
  * have already declared and stored in the file config.h
- * return the list of recettes of sandwichs */
+ * return the list of recettes of sandwichs 
+ */
 cook* init(){
 	int i;
 	cook* cook_list;
@@ -80,7 +81,8 @@ cook* init(){
 /* This is an auxilary funtion
  * it has two arguments, one is the name of sandwich 
  * the other is the name of one of its ingredients
- * then return the quantity of this kind of ingredient */
+ * then return the quantity of this kind of ingredient 
+ */
 float search(char* sandwich, char* ingredient) {
 	float m;
 	int i, j, k;
@@ -100,9 +102,10 @@ float search(char* sandwich, char* ingredient) {
 	return m;
 }
 
-/* This is the funtion for print the facture of commandes
+/* This is the funtion for printing the facture of commandes
  * it has two arguments, one is a list of versions of sandwichs
- * the other is the number of versions */
+ * the other is the number of versions 
+ */
 void facture(version* ver, int count){
 	cook* cook_list;
 	cook_list = init();
@@ -114,7 +117,7 @@ void facture(version* ver, int count){
 	kind* reqs;
 	char* sandwich;
 	
-/* This loop is used for traversing each sandwich of this list of version*/
+/* This loop is for traversing each sandwich of this list of version*/
 	while(k < count){
  		strcpy(sandwich, ver[k].type);
 		n = ver[k].num;
@@ -125,7 +128,7 @@ void facture(version* ver, int count){
 		}
 		printf("%2d %-26s", sum, sandwich);
 		
-/* This loop is used for finding the price of this sandwich*/
+/* This loop is for finding the price of this sandwich*/
 		for(i = 0; i < 5; i++){
 			if(strcmp(sandwich,price_list[i].name) == 0){
 				cost = price_list[i].euro;
@@ -136,8 +139,9 @@ void facture(version* ver, int count){
 		total = total + cost * sum;
 		cost = 0.0;
 		
-/* This loop is used in order to traverse all types of this version 
- * the next loop in this loop is used for traversing each require in one type */
+/* This loop is in order to traversing all types of this version 
+ * the next loop in this loop is for traversing each require in one type 
+ */
 		for(i = 0; i < n; i++){
 			for(j = 0; j < reqs[i].num; j++) {
 				if(strstr(reqs[i].require[j],"avec") != NULL || strstr(reqs[i].require[j],"sans") != NULL) {
@@ -150,7 +154,7 @@ void facture(version* ver, int count){
 					cost = 0.5 * reqs[i].cnt;
 					ndh = net = ni = 0;
 
-/* This loop is used for searching ',' or 'et' or 'ni' in the current require */
+/* This loop is for searching ',' or 'et' or 'ni' in the current require */
 					for(r = 0; r < strlen(reqs[i].require[j])-1; r++){
 						if(reqs[i].require[j][r] == ','){
 							ndh = ndh + 1;
@@ -176,6 +180,11 @@ void facture(version* ver, int count){
 }
 
 
+/* This function is for calculation of the inventory of ingredients
+ * it has two arguments like the previous function
+ * one is a list of versions, the other is the number of the versions in this list
+ * it prints a list of neccessary ingredients for this list of versions 
+ */
 void inventaire(version* ver,int num){
 	cook* cook_list;
 	cook_list = init();
@@ -229,15 +238,21 @@ void inventaire(version* ver,int num){
 	sandwich[3] = "belge";
 	sandwich[4] = "deippois";
 	
-	
+/* This loop is used for traversing all verions of sandwichs */	
 	m = 0;
 	while( m < num ) {
 		sum = 0;
 		f = 0;
+
+/* This loop is for calculating the total quantity of this version */
 		while(f < ver->num){
 			sum = sum + ver->types[f].cnt;;
 			f++;
 		}
+		
+/* This loop is for searching which type this version is 
+ * the next three loops are for adding the quantity in the final list of ingredients 
+ */
 		for (i = 0; i < 5; i++) {
 			if(strcmp(ver->type,cook_list[i].name) == 0) {
 				count = material[i];
@@ -255,9 +270,16 @@ void inventaire(version* ver,int num){
 				break;
 			}
 		}
+		
+/* This part is for check that if there are "sans" or "avec" 
+ * and change the quantity in the list of ingredients 
+ */
 		n = ver->num;
 		reqs = malloc(n * sizeof(kind));
 		reqs = ver->types;
+/* This loop is for traversing all types in the current version 
+ * the next one is for traversing all requires in each type 
+ */
 		for(i = 0; i < n; i++) {
 			for(j = 0; j < reqs[i].num; j++) {
 				if(strstr(reqs[i].require[j],"sans") != NULL || strstr(reqs[i].require[j],"avec") != NULL) {
@@ -273,6 +295,9 @@ void inventaire(version* ver,int num){
 					}
 					
 					l = 1;
+/* In the next two loops, they are for check the ingredients in require
+ * and change its quantity in the list of ingredients 
+ */
 					for(r = 0; r < strlen(modingred) - 1; ){
 						for(k = 0; k < 12; k++) {
 							if(modingred[r] == list[k].name[0]) {
@@ -299,18 +324,24 @@ void inventaire(version* ver,int num){
 		}
 		m++;
 		ver++;
-			//printf("12345\n");
 	}
 	for(i = 0; i < 12; i++) {
 		printf("%s,%.2f\n",list[i].name,list[i].num);
 	}
 }
 
+
+/* This function is for outputing a file which include HTML for showing the list to the cook 
+ * the two arguments are the same as the previous function
+ * one is a list of version, the other is number of version 
+ */
 void cuisine(version* ver, int count) {
 	int a, b, c, d, num, m;
 	int stream;
 	int n = 0;
 	int i, j, k;
+	
+/* This part is for combination of the same version in the list of version */	
 	for(a = 0; a < count; a++) {
 		for(b = a + 1; b < count; b++) {
 			if(strcmp(ver[a].type,ver[b].type) == 0) {
@@ -331,16 +362,21 @@ void cuisine(version* ver, int count) {
 			}
 		}
 	}
-	
+
+/* open the file cuisine.html, if there isn't this file, create one */	
 	if((stream = open("cuisine.html", O_RDWR|O_TRUNC|O_CREAT, S_IRWXU)) == -1) {
 		printf("create fail:%s\n",strerror(errno));
 		exit(1);	
 	}
+/* write the content into this file */
 	char buf[256] = "<html><head><title>Cuisine</title><body>";
 	if(write(stream, buf, strlen(buf))== -1) {
 		printf("write fail:%s\n",strerror(errno));
 		exit(1);
 	}
+/* traverse all the versions after combination 
+ * and write them into the file in a certain form of HTML
+ */
 	while(n < count) {
 		char buf1[256];
 		strcpy(buf1, "<h1>");
