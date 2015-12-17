@@ -16,6 +16,11 @@
 #include "init.h"
 #include "config.h"
 
+/* This function is for initialization of a list
+ * which include the name of a sandwich and a list of its neccessary ingredients
+ * for each type of sandwich, the ingredients for this sandwich 
+ * have already declared and stored in the file config.h
+ * return the list of recettes of sandwichs */
 cook* init(){
 	int i;
 	cook* cook_list;
@@ -72,7 +77,11 @@ cook* init(){
 	return sum;
 }*/
 
-float find(char* sandwich, char* ingredient) {
+/* This is an auxilary funtion
+ * it has two arguments, one is the name of sandwich 
+ * the other is the name of one of its ingredients
+ * then return the quantity of this kind of ingredient */
+float search(char* sandwich, char* ingredient) {
 	float m;
 	int i, j, k;
 	cook* cook_list;
@@ -91,26 +100,32 @@ float find(char* sandwich, char* ingredient) {
 	return m;
 }
 
+/* This is the funtion for print the facture of commandes
+ * it has two arguments, one is a list of versions of sandwichs
+ * the other is the number of versions */
 void facture(version* ver, int count){
 	cook* cook_list;
 	cook_list = init();
 	float total = 0.0;
 	int k = 0;
-	int ndh, net, ni, r;
+	int ndh, net, ni, r, n;
+	int i, j, sum;
+	float cost;
+	kind* reqs;
+	char* sandwich;
+	
+/* This loop is used for traversing each sandwich of this list of version*/
 	while(k < count){
-		char* sandwich = ver[k].type;
-		int n = ver[k].num;
-		//int n = 2;
-		//printf("nnnnn%d\n",n);
-		int i, j, sum;
-		float cost;
-		kind* reqs;
+ 		strcpy(sandwich, ver[k].type);
+		n = ver[k].num;
 		reqs = malloc(n * sizeof(kind));
 		for(i = 0, sum = 0; i < n; i++) {
 			reqs[i] = ver[k].types[i];
 			sum = sum + reqs[i].cnt;
 		}
 		printf("%2d %-26s", sum, sandwich);
+		
+/* This loop is used for finding the price of this sandwich*/
 		for(i = 0; i < 5; i++){
 			if(strcmp(sandwich,price_list[i].name) == 0){
 				cost = price_list[i].euro;
@@ -120,13 +135,11 @@ void facture(version* ver, int count){
 		printf("%.2f\n", cost * sum);
 		total = total + cost * sum;
 		cost = 0.0;
-		//printf("rererere%lu\n",sizeof(reqs[0].require));
+		
+/* This loop is used in order to traverse all types of this version 
+ * the next loop in this loop is used for traversing each require in one type */
 		for(i = 0; i < n; i++){
-			//printf("sizeof %lu\n",sizeof(reqs[i].require));
-			for(j = 0; j < reqs[i].num/*sizeof(reqs[i].require)*/; j++) {
-				//printf("%daaaaa\n",j);
-				//printf("%s\n",reqs[i].require[j]);
-				//printf("%s\n",strstr(reqs[i].require[j],"avec"));
+			for(j = 0; j < reqs[i].num; j++) {
 				if(strstr(reqs[i].require[j],"avec") != NULL || strstr(reqs[i].require[j],"sans") != NULL) {
 					if(strstr(reqs[i].require[j],"mais") != NULL) {
 						printf("  %2d %-25s",reqs[i].cnt,reqs[i].require[j] + 5);
@@ -136,6 +149,8 @@ void facture(version* ver, int count){
 					}
 					cost = 0.5 * reqs[i].cnt;
 					ndh = net = ni = 0;
+
+/* This loop is used for searching ',' or 'et' or 'ni' in the current require */
 					for(r = 0; r < strlen(reqs[i].require[j])-1; r++){
 						if(reqs[i].require[j][r] == ','){
 							ndh = ndh + 1;
@@ -164,6 +179,13 @@ void facture(version* ver, int count){
 void inventaire(version* ver,int num){
 	cook* cook_list;
 	cook_list = init();
+	ingredient* cur;
+	char* modingred;
+	int m, f;
+	int n, i, j, k, r, count, sum;
+	int l;
+	char* ingred;
+	kind* reqs;
 	ingredient list[12] = {
 		{0.0,"pain"},
 		{0.0,"jambon"},
@@ -193,9 +215,8 @@ void inventaire(version* ver,int num){
 		{1.0,"steak"},
 		{50.0,"thon"}
 	};
-	
-	int n, i, j, k, r, count, sum;
-	
+
+/* This array is definited to store the number of ingredients for each sandwich*/	
 	int material[5] = {3, 4, 5, 5, 4};
 	char** sandwich;
 	sandwich = malloc(5 * sizeof(char*));
@@ -208,16 +229,12 @@ void inventaire(version* ver,int num){
 	sandwich[3] = "belge";
 	sandwich[4] = "deippois";
 	
-	ingredient* cur;
-	char* modingred;
-	//while(ver) {
-	int m, f;
+	
 	m = 0;
 	while( m < num ) {
 		sum = 0;
 		f = 0;
-		while(/*ver->types*/ f < ver->num){
-			//printf(" sum %d\n",sum);
+		while(f < ver->num){
 			sum = sum + ver->types[f].cnt;;
 			f++;
 		}
@@ -238,13 +255,11 @@ void inventaire(version* ver,int num){
 				break;
 			}
 		}
-		kind* reqs;
 		n = ver->num;
-		    //printf("sizeof %lu\n",sizeof(ver->types));
 		reqs = malloc(n * sizeof(kind));
 		reqs = ver->types;
-		for(i = 0; i < n/*n*/; i++) {
-			for(j = 0; j < reqs[i].num/*sizeof(reqs[i].require)*/; j++) {
+		for(i = 0; i < n; i++) {
+			for(j = 0; j < reqs[i].num; j++) {
 				if(strstr(reqs[i].require[j],"sans") != NULL || strstr(reqs[i].require[j],"avec") != NULL) {
 					if(strstr(reqs[i].require[j],"mais") != NULL) {
 						n = (int)sizeof(reqs[i].require[j]) - 10;
@@ -256,12 +271,7 @@ void inventaire(version* ver,int num){
 						modingred = malloc(n * sizeof(char));
 						modingred = reqs[i].require[j] + 5;	
 					}
-					/*if(strstr(modingred,"double") != NULL) {
-						modingred = modingred + 7;
-					}*/
-					     //printf("%s\n",modingred);
-					int l;
-					char* ingred;
+					
 					l = 1;
 					for(r = 0; r < strlen(modingred) - 1; ){
 						for(k = 0; k < 12; k++) {
@@ -270,7 +280,7 @@ void inventaire(version* ver,int num){
 									ingred = list[k].name;
 									l = strlen(list[k].name);
 									if(strstr(reqs[i].require[j],"sans") != NULL){
-										list[k].num = list[k].num - reqs[i].cnt * find(ver->type,ingred);
+										list[k].num = list[k].num - reqs[i].cnt * search(ver->type,ingred);
 									}
 									else{
 										list[k].num = list[k].num + reqs[i].cnt * add[k].num;
@@ -298,6 +308,9 @@ void inventaire(version* ver,int num){
 
 void cuisine(version* ver, int count) {
 	int a, b, c, d, num, m;
+	int stream;
+	int n = 0;
+	int i, j, k;
 	for(a = 0; a < count; a++) {
 		for(b = a + 1; b < count; b++) {
 			if(strcmp(ver[a].type,ver[b].type) == 0) {
@@ -305,7 +318,6 @@ void cuisine(version* ver, int count) {
 				ver[a].num = ver[a].num + ver[b].num;
 				ver[a].types = realloc(ver[a].types, ver[a].num * sizeof(kind));
 				for(c = 0; c < ver[b].num; c++) {
-					//ver[a].types[num+c] = malloc(sizeof(kind));
 					ver[a].types[num+c].cnt = ver[b].types[c].cnt;
 					ver[a].types[num+c].num = ver[b].types[c].num;
 					m = ver[b].types[c].num;
@@ -320,7 +332,6 @@ void cuisine(version* ver, int count) {
 		}
 	}
 	
-	int stream;
 	if((stream = open("cuisine.html", O_RDWR|O_TRUNC|O_CREAT, S_IRWXU)) == -1) {
 		printf("create fail:%s\n",strerror(errno));
 		exit(1);	
@@ -330,8 +341,6 @@ void cuisine(version* ver, int count) {
 		printf("write fail:%s\n",strerror(errno));
 		exit(1);
 	}
-	int n = 0;
-	int i, j, k;
 	while(n < count) {
 		char buf1[256];
 		strcpy(buf1, "<h1>");
