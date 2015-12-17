@@ -64,7 +64,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 33 "fastfood.y"
+#line 36 "fastfood.y"
 {
 	int num;
 	char* word;
