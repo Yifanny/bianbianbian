@@ -74,6 +74,7 @@ char* mais_sans = "mais sans ";
 char* ni = "ni ";
 char* et = "et ";
 char* comma = ", ";
+char* twice = "double";
 char* et_double = "et double ";
 char* comma_double = ", double ";
 char* jambon = "jambon";

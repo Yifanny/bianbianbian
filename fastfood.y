@@ -78,11 +78,11 @@ program: {
 		}
 		
 		order = malloc(count * sizeof(version));
-		printf("lololo\n");
+		printf("start transform\n");
 		for (i = 0; i < count; i++) {
 			order[i] = transform(&sandwich[i].head, sandwich[i].type);
-			printf("llllll\n");
 		}
+		printf("finish transform\n");
 		pshow(order);
 		
 		printf("waiting for the new command\n");
@@ -152,7 +152,7 @@ commandes create_commande(int num, char* type) {
 	commandes cmd;
 	printf("creating %s \n", type);
 	cmd.type = type;
-	cmd.head.typenode = 0;
+	cmd.head.typenode = 4;
 	cmd.head.content.word = NULL;
 	cmd.head.left = malloc(sizeof(node));
 	if (cmd.head.left == NULL) {
@@ -236,7 +236,6 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 
  commandes add_requirement(commandes* cmd, node* req) {
 	 cmd->head.right = req;
-	 cmd->head.typenode = 4;
 	 
 	 return *cmd;
 	 
@@ -245,6 +244,7 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
  commandes add_condition(commandes* cmd, char* spl, node* cons) {
 	 cmd->head.content.word = spl;
 	 cmd->head.right = cons;
+	 cmd->head.typenode = 0;
 	 
 	 return *cmd;
  }
@@ -296,7 +296,6 @@ int check(char* ingredient, char* type) {
 	for (i = 0; i < CNTSANDW; i++) {
 		if (strstr(type, menu[i].name) != NULL) {
 			for (j = 0; j < material[i]; j++) {
-				printf("eee %s\n", menu[i].material[j].name);
 				if (!strcmp(ingredient, menu[i].material[j].name)) {
 					return 1;
 				}
@@ -332,6 +331,7 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 			case 2:
 				ret = check(point->content.word, type);
 				tmp = point->content.word;
+				printf("%s %s %d henji\n", tmp, opr, ret);
 				if (!strcmp(opr, avec) || !strcmp(opr, mais_avec)) {
 					printf("now: %d\n", ret);
 					if (ret) {
@@ -391,11 +391,31 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 					}
 				}
 				else if (!strcmp(point->content.word, ni) || !strcmp(point->content.word, et) || !strcmp(point->content.word, comma)) {
-					if ((ret = verifie_commandes(point->left, type, opr, cnt, is_meat)) >= 0) {
-						return verifie_commandes(point->right, type, opr, ret, is_meat);
+					if (strstr(opr, twice) != NULL) {
+						if (strstr(opr, avec) != NULL) {
+							if ((ret = verifie_commandes(point->left, type, avec, cnt, is_meat)) >= 0) {
+								return verifie_commandes(point->right, type, avec, ret, is_meat);
+							}
+							else {
+								return -1;
+							}
+						}
+						else if (strstr(opr, sans) != NULL) {
+							if ((ret = verifie_commandes(point->left, type, sans, cnt, is_meat)) >= 0) {
+								return verifie_commandes(point->right, type, sans, ret, is_meat);
+							}
+							else {
+								return -1;
+							}
+						}
 					}
 					else {
-						return -1;
+						if ((ret = verifie_commandes(point->left, type, opr, cnt, is_meat)) >= 0) {
+								return verifie_commandes(point->right, type, opr, ret, is_meat);
+							}
+						else {
+							return -1;
+						}
 					}
 				}
 				else if (!strcmp(point->content.word, et_double) || !strcmp(point->content.word, comma_double)) {
@@ -420,26 +440,72 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 }
 
 char** collect_require(node* point, char** res, char* opr) {
-	printf("%s 1  \n", opr);
+	int i, j;
+	printf("%s  \n", opr);
 	if (point != NULL) {
 		printf("hereh\n");
-		printf("%d as\n", point->typenode);
 		tmp = point->content.word;
+		printf("%d %s as\n", point->typenode, tmp);
 		if (strstr(tmp, avec) != NULL) {	
-			res[0] = (res[0] == NULL)?tmp:strcat(res[0], tmp);
-			res[0] = strcat(res[0], point->left->content.word);
+			printf("lalalalalalalala\n");
+			if (res[0] == NULL) {
+			printf(" current condition is : %s \n", res[0]);
+				res[0] = malloc((strlen(tmp) + strlen(point->left->content.word) + 2) * sizeof(char));
+				printf(" current condition is : %s \n", res[0]);
+				printf(" current add is : %s \n", tmp);
+				printf(" current condition is : %s \n", res[0]);
+				res[0] = strcat(res[0], tmp);
+				printf(" current condition is : %s \n", res[0]);
+				res[0] = strcat(res[0], point->left->content.word);
+				printf(" current condition is : %s \n", res[0]);
+				i = strlen(res[0]);
+				res[0][i] = ' ';
+				res[0][i + 1] = '\0';
+			}
+			else {
+				res[0] = realloc(res[0], (strlen(res[0]) + strlen(tmp) + strlen(point->left->content.word) + 2) * sizeof(char));
+				res[0] = strcat(res[0], tmp);
+				res[0] = strcat(res[0], point->left->content.word);
+				i = strlen(res[0]);
+				res[0][i] = ' ';
+				res[0][i + 1] = '\0';
+			}
 			opr = avec;
+			
 		}
 		else if (strstr(tmp, sans) != NULL) {
-			printf("herer? %s\n", res[1]);
-			res[1] = (res[1] == NULL)?tmp:strcat(res[1], tmp);
 			printf("herer?\n");
-			res[1] = strcat(res[1], point->left->content.word);
+			if (res[1] == NULL) {
+				res[1] = malloc((strlen(tmp) + strlen(point->left->content.word) + 2) * sizeof(char));
+				res[1] = strcat(res[1], tmp);
+				printf("muamua\n");
+				res[1] = strcat(res[1], point->left->content.word);
+				i = strlen(res[1]);
+				res[1][i] = ' ';
+				res[1][i + 1] = '\0';
+			}
+			else {
+				res[1] = realloc(res[1], (strlen(res[1]) + strlen(tmp) + strlen(point->left->content.word) + 2) * sizeof(char));
+				res[1] = strcat(res[1], tmp);
+				res[1] = strcat(res[1], point->left->content.word);
+				i = strlen(res[1]);
+				res[1][i] = ' ';
+				res[1][i + 1] = '\0';
+			}
 			opr = sans;
 		}
 		else {
-			res[strstr(opr, avec) != NULL?0:1] = strcat(res[strstr(opr, avec) != NULL?0:1], tmp);
-			res[strstr(opr, avec) != NULL?0:1] = strcat(res[strstr(opr, avec) != NULL?0:1], point->left->content.word);
+			i = strstr(opr, avec) != NULL?0:1;
+			res[i] = realloc(res[i], (strlen(res[i]) + strlen(tmp) + strlen(point->left->content.word) + 2) * sizeof(char));
+			printf(" current condition is : %s \n", res[i]);
+			res[i] = strcat(res[i], tmp);	
+			printf(" current condition is : %s \n", res[i]);	
+			res[i] = strcat(res[i], point->left->content.word);
+			j = strlen(res[i]);
+			res[i][j] = ' ';
+			res[i][j + 1] = '\0';
+			
+			
 		}
 		return collect_require(point->right, res, opr);
 	}
@@ -453,10 +519,14 @@ kind* make_kind(node* head) {
 	result[0] = NULL;
 	result[1] = NULL;
 	res = malloc(sizeof(kind));
-	ret = 0;
 	res->cnt = head->left->content.num;
 	printf("number of type: %d\n", res->cnt); 
-	res->require = collect_require(head->right, result, head->right->content.word);
+	if (head->right != NULL) {
+		res->require = collect_require(head->right, result, head->right->content.word);
+	}
+	else {
+		res->require = result;
+	}
 	printf("ls\n");
 	res->num = 2;
 	return res;
@@ -467,7 +537,6 @@ kind* collect_kind(node* point, kind* res) {
 	printf("here %d\n", point->typenode);
 	if (point->typenode == 4) {
 		ans = make_kind(point);
-		printf("%d: aaaaaaaa\n",ans[0].cnt);
 		printf("inside %d\n", ret);
 		res = realloc(res, (ret + 1) * sizeof(kind));
 		res[ret] = *ans;
