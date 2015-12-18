@@ -20,7 +20,7 @@ struct commandes{
 %}
 
 INGREDIENT "pain"|"beurre"|"emmental"|"jambon"|"beurre"|"salade"|"tomate"|"steak"|"frites"|"mayonnaise"|"thon"|"ketchup"|"moutarde"
-
+TYPE "fromage"|"jambon-beurre"|"panini"|"belge"
 
 %%
 [\n] { 
@@ -28,7 +28,25 @@ INGREDIENT "pain"|"beurre"|"emmental"|"jambon"|"beurre"|"salade"|"tomate"|"steak
 	return NEW;
 }
 
-([1]/INGREDIENT)|(0?[23456789][1-9]?/((INGREDIENT)s)) {
+1/{TYPE} {
+	yylval.num = atoi(yytext);
+	printf("id: %s ",yytext);
+	return NUMBER;
+}
+
+0?1[0-9]+/{TYPE}s {
+	yylval.num = atoi(yytext);
+	printf("id: %s ",yytext);
+	return NUMBER;
+}
+
+0?[2-9][1-9]?/{TYPE}s {
+	yylval.num = atoi(yytext);
+	printf("id: %s ",yytext);
+	return NUMBER;
+}
+
+[0-9]+/"dieppois" {
 	yylval.num = atoi(yytext);
 	printf("id: %s ",yytext);
 	return NUMBER;
@@ -61,6 +79,22 @@ INGREDIENT "pain"|"beurre"|"emmental"|"jambon"|"beurre"|"salade"|"tomate"|"steak
 }
 
 ", "("double ")?|"sans "|"avec "("double ")?|"ni "|"et "("double ")?/{INGREDIENT} {
+	yylval.word = malloc((yyleng + 1) * sizeof(char));
+	yylval.word = strncpy(yylval.word, yytext, yyleng);
+	yylval.word[yyleng] = '\0';
+	printf("operator: %s ",yytext);
+	return OPERATION;
+}
+
+"sans "/{INGREDIENT}(", "{INGREDIENT})*(" ni "{INGREDIENT})?" mais avec " {
+	yylval.word = malloc((yyleng + 1) * sizeof(char));
+	yylval.word = strncpy(yylval.word, yytext, yyleng);
+	yylval.word[yyleng] = '\0';
+	printf("operator: %s ",yytext);
+	return OPERATION;
+}
+
+"avec "/{INGREDIENT}(", "{INGREDIENT})*(" et "{INGREDIENT})?" mais sans " {
 	yylval.word = malloc((yyleng + 1) * sizeof(char));
 	yylval.word = strncpy(yylval.word, yytext, yyleng);
 	yylval.word[yyleng] = '\0';
