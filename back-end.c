@@ -364,9 +364,11 @@ void cuisine(version* ver, int count) {
 					ver[a].types[num+c].require = malloc(m*sizeof(char*));
 					for(d = 0; d < m; d++) {
 						int len = strlen(ver[b].types[c].require[d]);
-				    	ver[a].types[num+c].require[d] = malloc(d*sizeof(char));
+				    	ver[a].types[num+c].require[d] = malloc(len * sizeof(char));
 						strcpy(ver[a].types[num+c].require[d], ver[b].types[c].require[d]);
 					}
+					//printf("a%d num+c%d require0 : %s\n",a,num+c,ver[a].types[num+c].require[0]);
+					//printf("a%d num+c%d require1 : %s\n",a,num+c,ver[a].types[num+c].require[1]);
 				}
 			}
 		}
@@ -403,12 +405,17 @@ void cuisine(version* ver, int count) {
 				//itoa(ver[n].types[i].cnt, tmp, 10);
 				sprintf(tmp,"%d", ver[n].types[i].cnt);
 				strcat(buf2,tmp);
-				for(j = 0; j < ver[n].types[i].num; j++) {
-					strcat(buf2," ");
-					if(strcmp(ver[n].types[i].require[j], "") == 0 ) {
-						strcat(buf2, "normaux");
+				if(strcmp(ver[n].types[i].require[0], "") == 0 ) {
+					if(strcmp(ver[n].types[i].require[1], "") == 0){
+						strcat(buf2, " normaux");
 					}
-					strcat(buf2,ver[n].types[i].require[j]);
+				}
+				else{
+					for(j = 0; j < ver[n].types[i].num; j++) {
+						//printf("%s  %s\n",ver[n].type,ver[n].types[i].require[j]);
+						strcat(buf2," ");
+						strcat(buf2,ver[n].types[i].require[j]);
+					}
 				}
 				strcat(buf2,"</li>");
 			}
@@ -444,13 +451,12 @@ version* combine_types(version* ver, int* count) {
 		flag[i] = 0;
 	}
 	
-/* This part is for combination of the same version in the list of version */	
 	for(a = 0; a < (*count); a++) {
 		for(b = a + 1; b < (*count); b++) {
 			if(strcmp(ver[a].type,ver[b].type) == 0) {
 				flag[b] = 1;
 				num = ver[a].num;
-				printf("%d %d %d %d\n",a,ver[a].num,b,ver[b].num);
+				//printf("%d %d %d %d\n",a,ver[a].num,b,ver[b].num);
 				ver[a].num = ver[a].num + ver[b].num;
 				//printf("%d %s\n",ver[a].num,ver[a].type);
 				ver[a].types = realloc(ver[a].types, ver[a].num * sizeof(kind));
@@ -481,12 +487,12 @@ version* combine_types(version* ver, int* count) {
 }
 
 
-void combination (version* vers, int count) {
+version* combination (version* vers, int count) {
 	//printf("aaaaa%d\n",vers[0].num);
 	char* ingredient[12] = {"pain", "jambon","beurre", "salade", "emmental", 
 	"ketchup", "moutarde", "mayonnaise", "frites", "tomate", "steak", "thon"};
 	int i, j, k, p, q, m, n, flag;
-	char** reqs;
+	version* new_ver;
 	int* pcount = &count;
 	   //printf("aaaaa%d\n",vers[0].num);
 	version* ver = combine_types(vers, pcount);
@@ -504,22 +510,32 @@ void combination (version* vers, int count) {
 				for(q = p + 1; q < ver[i].num; q++) {
 					//printf("qqqqqq %d\n",q);
 					for(n = 0; n < 2; n++) {
-						for(k = 0; k < 12; k++){
+						flag = 1;
+						if(strcmp(ver[i].types[p].require[n],"") == 0 && strcmp(ver[i].types[q].require[n],"") == 0) {
+							flag = 0;
+							continue;
+						}
+						else {
+							for(k = 0; k < 12; k++){
 							//printf("fff %d : %s %d %s\n",k,ver[i].type,flag,ingredient[k]);
-							if(strstr(ver[i].types[p].require[n],ingredient[k]) != NULL) {
-								if(strstr(ver[i].types[q].require[n],ingredient[k]) != NULL) {
-									flag = 0;
-									printf("asdf\n");
-								}
-								else {
-									flag = 1;
-									break;
+								if(strstr(ver[i].types[p].require[n],ingredient[k]) != NULL) {
+									if(strstr(ver[i].types[q].require[n],ingredient[k]) != NULL) {
+										flag = 0;
+										//printf("asdf  %s\n",ingredient[k]);
+									}
+									else {
+										flag = 1;
+										//printf("11111111%s\n",ver[i].type);
+										break;
+									}
 								}
 							}
 						}
-						//printf("nnnnnn %d\n",n);
 					}
 					if(flag == 0) {
+						//printf("nnnnnn %s %s\n",ver[i].type,ver[i].types[p].require[0]);
+						//printf("nnnnnn %s %s\n",ver[i].type,ver[i].types[p].require[1]);
+						
 						ver[i].types[p].cnt = ver[i].types[q].cnt + ver[i].types[p].cnt;
 						for(j = q + 1; j < ver[i].num; j++) {
 							for(m = 0; m < 2; m++) {
@@ -533,6 +549,11 @@ void combination (version* vers, int count) {
 			}
 		//}
 	}
+	new_ver = malloc(count * sizeof(version));
+	for(i = 0; i < count; i++) {
+		new_ver[i] = ver[i];
+	}
+	return new_ver;
 }
 
 
@@ -598,7 +619,8 @@ int main() {
 	inventaire(order,3);
 	//printf("bbbbbb%d\n",order[0].num);
 	//cuisine(order,3);
-	combination(order,3);
-	//facture(order,2);
+	version* new_order = combination(order,3);
+	printf("llalalala %d\n",order[0].num);
+	facture(new_order,2);
 	return 0;
 }
