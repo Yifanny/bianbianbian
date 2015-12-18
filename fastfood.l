@@ -21,7 +21,6 @@ struct commandes{
 
 INGREDIENT "pain"|"beurre"|"emmental"|"jambon"|"beurre"|"salade"|"tomate"|"steak"|"frites"|"mayonnaise"|"thon"|"ketchup"|"moutarde"
 
-TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 
 %%
 [\n] { 
@@ -29,7 +28,7 @@ TYPE "fromage"[s]*|"jambon-beurre"[s]*|"panini"[s]*|"belge"[s]*|"dieppois"[s]*
 	return NEW;
 }
 
-[1-9]+ {
+([1]/INGREDIENT)|(0?[23456789][1-9]?/((INGREDIENT)s)) {
 	yylval.num = atoi(yytext);
 	printf("id: %s ",yytext);
 	return NUMBER;
