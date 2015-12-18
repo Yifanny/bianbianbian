@@ -487,22 +487,22 @@ version* combine_types(version* ver, int* count) {
 }
 
 
-version* combination (version* vers, int count) {
+version* combination (version* vers, int* count) {
 	//printf("aaaaa%d\n",vers[0].num);
 	char* ingredient[12] = {"pain", "jambon","beurre", "salade", "emmental", 
 	"ketchup", "moutarde", "mayonnaise", "frites", "tomate", "steak", "thon"};
 	int i, j, k, p, q, m, n, flag;
 	version* new_ver;
-	int* pcount = &count;
+	//int* pcount = &count;
 	   //printf("aaaaa%d\n",vers[0].num);
-	version* ver = combine_types(vers, pcount);
+	version* ver = combine_types(vers, count);
 	printf("0 : %s\n",ver[0].type);
 	printf("1 : %s\n",ver[1].type);
 	printf("2 : %s\n",ver[2].type);
 	//count = *pcount;
 	//printf("lalala : %d\n",count);
 	flag = 1;
-	for(i = 0; i < count; i++) {
+	for(i = 0; i < (*count); i++) {
 		//if(flags[i] == 0){
 		//printf("lalala : %d\n",i);
 		//printf("%s   %d\n",ver[i].type, ver[i].num);
@@ -549,8 +549,8 @@ version* combination (version* vers, int count) {
 			}
 		//}
 	}
-	new_ver = malloc(count * sizeof(version));
-	for(i = 0; i < count; i++) {
+	new_ver = malloc((*count) * sizeof(version));
+	for(i = 0; i < (*count); i++) {
 		new_ver[i] = ver[i];
 	}
 	return new_ver;
@@ -619,8 +619,11 @@ int main() {
 	inventaire(order,3);
 	//printf("bbbbbb%d\n",order[0].num);
 	//cuisine(order,3);
-	version* new_order = combination(order,3);
-	printf("llalalala %d\n",order[0].num);
-	facture(new_order,2);
+	int n = 3;
+	int* pn = &n;
+	version* new_order = combination(order,pn);
+	//printf("llalalala %d\n",n);
+	facture(new_order,n);
+	cuisine(new_order,n);
 	return 0;
 }
