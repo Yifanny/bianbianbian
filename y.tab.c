@@ -109,7 +109,7 @@
 	void nshow(node* point);
 	cook* init();
 	int check(char* ingredient, char* type);
-	int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat);
+	int verifie_commandes(node* point, char* type, char* opr, int cnt);
 	char** collect_require(node* point, char** res, char* opr);
 	kind* make_kind(node* head);
 	kind* collect_kind(node* point, kind* res);
@@ -120,6 +120,7 @@
 	
 	cook* menu;
 	int count;
+	int is_meat;
 	int length;
 	int ret;
 	int i;
@@ -146,7 +147,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 36 "fastfood.y"
+#line 37 "fastfood.y"
 {
 	int num;
 	char* word;
@@ -154,7 +155,7 @@ typedef union YYSTYPE
 	struct commandes* cmd;
 }
 /* Line 193 of yacc.c.  */
-#line 158 "y.tab.c"
+#line 159 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -167,7 +168,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 171 "y.tab.c"
+#line 172 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -453,8 +454,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    61,    61,    64,    94,   100,   104,   111,   114,   120,
-     123,   129
+       0,    62,    62,    65,   107,   113,   117,   124,   127,   133,
+     136,   142
 };
 #endif
 
@@ -1360,35 +1361,47 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 61 "fastfood.y"
+#line 62 "fastfood.y"
     {
 		printf("waiting for the new command\n");
 	}
     break;
 
   case 3:
-#line 64 "fastfood.y"
+#line 65 "fastfood.y"
     {		
 		printf("%s, nice choice\n", sandwich[count - 1].type);
 		//nshow(&sandwich[count - 1].head);
 		printf("henji\n");
 		if (!strcmp(fromage, sandwich[count - 1].type)) {
-			ret = verifie_commandes(&sandwich[count - 1].head, sandwich[count - 1].type, NULL, 2 * sandwich[count - 1].head.left->content.num, 0);
+			is_meat = 0;
+			ret = verifie_commandes(&sandwich[count - 1].head, sandwich[count - 1].type, NULL, 2 * sandwich[count - 1].head.left->content.num);
 		}
 		else {
-			ret = verifie_commandes(&sandwich[count - 1].head, sandwich[count - 1].type, NULL, 2 * sandwich[count - 1].head.left->content.num, 1);
+			is_meat = 1;
+			ret = verifie_commandes(&sandwich[count - 1].head, sandwich[count - 1].type, NULL, 2 * sandwich[count - 1].head.left->content.num);
 		}
 		printf("lalal: %d\n", ret);
-		if (ret < 0) {
+		if (ret < 0 || is_meat > 1) {
 			yyerror("error input\n");
 			return 1;
 		}
 		
 		order = malloc(count * sizeof(version));
 		printf("start transform\n");
+		length = ret;
 		for (i = 0; i < count; i++) {
 			order[i] = transform(&sandwich[i].head, sandwich[i].type);
 		}
+		if (length > 0 && length != sandwich[count - 1].head.left->content.num) {
+			order[count - 1].num++;
+			order[count - 1].types = realloc(order[count - 1].types, order[count - 1].num * sizeof(kind));
+			order[count - 1].types[order[count - 1].num - 1].require = malloc(2 * sizeof(char*));
+			order[count - 1].types[order[count - 1].num - 1].require[0] = NULL;
+			order[count - 1].types[order[count - 1].num - 1].require[1] = NULL;
+			order[count - 1].types[order[count - 1].num - 1].num = 2;
+			order[count - 1].types[order[count - 1].num - 1].cnt = length;
+		} 
 		printf("finish transform\n");
 		pshow(order);
 		
@@ -1398,7 +1411,7 @@ yyreduce:
     break;
 
   case 4:
-#line 94 "fastfood.y"
+#line 107 "fastfood.y"
     {
 		printf("require are %s\n", sandwich[count - 1].type);
 		sandwich[count - 1] = add_condition((yyvsp[(1) - (3)].cmd), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
@@ -1408,7 +1421,7 @@ yyreduce:
     break;
 
   case 5:
-#line 100 "fastfood.y"
+#line 113 "fastfood.y"
     {
 		sandwich[count - 1] = add_requirement((yyvsp[(1) - (2)].cmd), (yyvsp[(2) - (2)].point));
 		(yyval.cmd) = &sandwich[count - 1];
@@ -1416,7 +1429,7 @@ yyreduce:
     break;
 
   case 6:
-#line 104 "fastfood.y"
+#line 117 "fastfood.y"
     {
 		(yyval.cmd) = (yyvsp[(1) - (1)].cmd);
 		printf("No %d: order finish\n", count);
@@ -1424,35 +1437,35 @@ yyreduce:
     break;
 
   case 7:
-#line 111 "fastfood.y"
+#line 124 "fastfood.y"
     {
 		(yyval.point) = combine_entities(create_entity((yyvsp[(1) - (4)].num), (yyvsp[(2) - (4)].point)), (yyvsp[(3) - (4)].word), (yyvsp[(4) - (4)].point));
 	}
     break;
 
   case 8:
-#line 114 "fastfood.y"
+#line 127 "fastfood.y"
     {
 		(yyval.point) = create_entity((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].point));
 	}
     break;
 
   case 9:
-#line 120 "fastfood.y"
+#line 133 "fastfood.y"
     {
 		(yyval.point) = create_ingredient((yyvsp[(1) - (2)].word), (yyvsp[(2) - (2)].word));
 	}
     break;
 
   case 10:
-#line 123 "fastfood.y"
+#line 136 "fastfood.y"
     {
 		(yyval.point) = create_ingredients((yyvsp[(1) - (3)].word), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 	}
     break;
 
   case 11:
-#line 129 "fastfood.y"
+#line 142 "fastfood.y"
     {
 		printf("%s\n", (yyvsp[(2) - (2)].word));
 		if (count) {
@@ -1471,7 +1484,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1475 "y.tab.c"
+#line 1488 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1685,7 +1698,7 @@ yyreturn:
 }
 
 
-#line 145 "fastfood.y"
+#line 158 "fastfood.y"
 
 
 
@@ -1850,14 +1863,14 @@ int check(char* ingredient, char* type) {
 }
 
 
-int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) {
+int verifie_commandes(node* point, char* type, char* opr, int cnt) {
 	int ret;
 	if (point != NULL) {
 		switch (point->typenode) {
 			case 4:
 			case 0:
-				if ((ret = verifie_commandes(point->left, type, NULL, cnt, is_meat)) >= 0) {
-					return verifie_commandes(point->right, type, NULL, ret, is_meat);
+				if ((ret = verifie_commandes(point->left, type, NULL, cnt)) >= 0) {
+					return verifie_commandes(point->right, type, NULL, ret);
 				}
 				else {
 					return -1;
@@ -1878,17 +1891,11 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 				printf("%s %s %d henji\n", tmp, opr, ret);
 				if (!strcmp(opr, avec) || !strcmp(opr, mais_avec)) {
 					printf("now: %d\n", ret);
+					if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
+						is_meat++;
+					}
 					if (ret) {
 						return -1;
-					}
-					else if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
-						if (is_meat) {
-							return -1;
-						}
-						else {
-							is_meat = 1;
-							return cnt;
-						}
 					}
 					else {
 						return cnt;
@@ -1897,12 +1904,9 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 				else if (!strcmp(opr, sans) || !strcmp(opr, mais_sans)) {
 					if (ret) {
 						if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
-							is_meat = 0;
-							return cnt;
+							is_meat--;
 						}
-						else {
-							return cnt;
-						}
+						return cnt;
 					}
 					else {
 						return -1;
@@ -1927,8 +1931,8 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 			case 3:
 				if (!strcmp(point->content.word, sans) || !strcmp(point->content.word, mais_sans) || !strcmp(point->content.word, avec_double) || 
 					!strcmp(point->content.word, mais_avec_double) || !strcmp(point->content.word, avec) || !strcmp(point->content.word, mais_avec)) {
-					if ((ret = verifie_commandes(point->left, type, point->content.word, cnt, is_meat)) >= 0) {
-						return verifie_commandes(point->right, type, point->content.word, ret, is_meat);
+					if ((ret = verifie_commandes(point->left, type, point->content.word, cnt)) >= 0) {
+						return verifie_commandes(point->right, type, point->content.word, ret);
 					}
 					else {
 						return -1;
@@ -1937,16 +1941,16 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 				else if (!strcmp(point->content.word, ni) || !strcmp(point->content.word, et) || !strcmp(point->content.word, comma)) {
 					if (strstr(opr, twice) != NULL) {
 						if (strstr(opr, avec) != NULL) {
-							if ((ret = verifie_commandes(point->left, type, avec, cnt, is_meat)) >= 0) {
-								return verifie_commandes(point->right, type, avec, ret, is_meat);
+							if ((ret = verifie_commandes(point->left, type, avec, cnt)) >= 0) {
+								return verifie_commandes(point->right, type, avec, ret);
 							}
 							else {
 								return -1;
 							}
 						}
 						else if (strstr(opr, sans) != NULL) {
-							if ((ret = verifie_commandes(point->left, type, sans, cnt, is_meat)) >= 0) {
-								return verifie_commandes(point->right, type, sans, ret, is_meat);
+							if ((ret = verifie_commandes(point->left, type, sans, cnt)) >= 0) {
+								return verifie_commandes(point->right, type, sans, ret);
 							}
 							else {
 								return -1;
@@ -1954,8 +1958,8 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 						}
 					}
 					else {
-						if ((ret = verifie_commandes(point->left, type, opr, cnt, is_meat)) >= 0) {
-								return verifie_commandes(point->right, type, opr, ret, is_meat);
+						if ((ret = verifie_commandes(point->left, type, opr, cnt)) >= 0) {
+								return verifie_commandes(point->right, type, opr, ret);
 							}
 						else {
 							return -1;
@@ -1964,8 +1968,8 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt, int is_meat) 
 				}
 				else if (!strcmp(point->content.word, et_double) || !strcmp(point->content.word, comma_double)) {
 					if (strstr(opr, avec) != NULL) {
-						if ((ret = verifie_commandes(point->left, type, avec_double, cnt, is_meat)) >= 0) {
-							return verifie_commandes(point->right, type, opr, ret, is_meat);
+						if ((ret = verifie_commandes(point->left, type, avec_double, cnt)) >= 0) {
+							return verifie_commandes(point->right, type, opr, ret);
 						}
 						else {
 							return -1;
@@ -1994,8 +1998,9 @@ char** collect_require(node* point, char** res, char* opr) {
 			printf("lalalalalalalala\n");
 			if (res[0] == NULL) {
 			printf(" current condition is : %s \n", res[0]);
-			res[0] = malloc(20 * sizeof(char));
-				//res[0] = malloc((strlen(tmp) + strlen(point->left->content.word) + 2) * sizeof(char));
+				i = strlen(tmp) + strlen(point->left->content.word) + 2;
+				res[0] = malloc(i * sizeof(char));
+				res[0] = memset(res[0], '\0', i);
 				printf(" current condition is : %s \n", res[0]);
 				printf(" current add is : %s \n", tmp);
 				printf(" current condition is : %s \n", res[0]);
@@ -2021,7 +2026,9 @@ char** collect_require(node* point, char** res, char* opr) {
 		else if (strstr(tmp, sans) != NULL) {
 			printf("herer?\n");
 			if (res[1] == NULL) {
-				res[1] = malloc((strlen(tmp) + strlen(point->left->content.word) + 2) * sizeof(char));
+				i = strlen(tmp) + strlen(point->left->content.word) + 2;
+				res[1] = malloc(i * sizeof(char));
+				res[1] = memset(res[1], '\0', i);
 				res[1] = strcat(res[1], tmp);
 				printf("muamua\n");
 				res[1] = strcat(res[1], point->left->content.word);
@@ -2101,6 +2108,7 @@ version transform(node* head, char* type) {
 	res.types = NULL;
 	res.type = type;
 	res.types = collect_kind(head, res.types);
+	printf("finish collect\n");
 	res.num = ret;
 	return res;
 }
