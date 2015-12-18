@@ -143,3 +143,80 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt) {
 	}
 }
 
+
+int* combine_types(version* ver, int count) {
+	int a, b, c, d, num, m;
+	int stream;
+	int n = 0;
+	int i, j, k;
+	int flag[count];
+	
+	for(i = 0; i < count; i++) {
+		flag[i] = 0;
+	}
+	
+/* This part is for combination of the same version in the list of version */	
+	for(a = 0; a < count; a++) {
+		for(b = a + 1; b < count; b++) {
+			if(strcmp(ver[a].type,ver[b].type) == 0) {
+				flag[b] = 1;
+				num = ver[a].num;
+				ver[a].num = ver[a].num + ver[b].num;
+				ver[a].types = realloc(ver[a].types, ver[a].num * sizeof(kind));
+				for(c = 0; c < ver[b].num; c++) {
+					ver[a].types[num+c].cnt = ver[b].types[c].cnt;
+					ver[a].types[num+c].num = ver[b].types[c].num;
+					m = ver[b].types[c].num;
+					ver[a].types[num+c].require = malloc(m*sizeof(char*));
+					for(d = 0; d < m; d++) {
+						int len = strlen(ver[b].types[c].require[d]);
+				    	ver[a].types[num+c].require[d] = malloc(len*sizeof(char));
+						strcpy(ver[a].types[num+c].require[d], ver[b].types[c].require[d]);
+					}
+				}
+			}
+		}
+	}
+	return flag;
+}
+
+
+void combination (version* ver, int count) {
+	char* ingredient[12] = {"pain", "jambon" "beurre", "salade", "emmental", 
+	"ketchup", "moutarde", "mayonnaise", "frites", "tomate", "steak", "thon"};
+	int i, j, k, p, q, m, n, flag;
+	char** reqs;
+	int* flags = combine_types(ver, count);
+	flag = 0;
+	for(i = 0; i < count; i++) {
+		if(flags[i] == 0){
+			for(p = 0; p < ver[i].num - 1; p++) {
+				for(q = p + 1; q < ver[i].num; q++) {
+					for(k = 0; k < 12; k++) {
+						for(n = 0; n < 2; n++) {
+							if(strstr(ver[i].types[p].require[n],ingredient[k]) != NULL) {
+								if(strstr(ver[i].types[q].require[n],ingredient[k]) != NULL) {
+									flag = 0;
+								}
+								else {
+									flag = 1;
+									break;
+								}
+							}
+						}
+					}
+					if(flag == 0) {
+						ver[i].types[p].cnt = ver[i].types[q].cnt + ver[i].types[p].cnt;
+						for(j = q + 1; j < ver[i].num; j++) {
+							for(m = 0; m < 2; m++) {
+								strcpy(ver[i].types[j-1].require[m],ver[i].types[j].require[m]);	
+							}
+							ver[i].types[j-1].cnt = ver[i].types[j].cnt;
+						}
+						ver[i].num = ver[i].num - 1;
+					}
+				}
+			}
+		}
+	}
+}
