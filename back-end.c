@@ -48,35 +48,6 @@ cook* init(){
 	}
 	return cook_list;
 }
-/*float InOrder(node_c* tree) {
-	int num;
-	float sum;
-	if(tree) {
-		sum = sum + InOrder(tree->left);
-		if(sizeof(tree->content) == sizeof(int)) {
-			printf("\n  %2d ",tree->content.num);
-			num = tree->content.num;
-		}
-		else if(strstr(operators, tree->content.word)){
-			printf("%s",tree->content.word);
-		}
-		else if(strcmp(tree->content.word,"et") == 0) {
-			printf("\n  %2d avec ",num);
-		}
-		else if(strcmp(tree->content.word,"ni") == 0) {
-			printf("\n  %2d sans ",num);
-		}
-		else if(strcmp(tree->content.word,"mais") == 0) {
-			printf("\n  %2d ",num);
-		}
-		else {
-			sum = 0.5 * num;
-			printf(" %5s%.2f",tree->content.word,sum);
-		}
-		sum = sum + InOrder(tree->right);
-	}
-	return sum;
-}*/
 
 /* This is an auxilary funtion
  * it has two arguments, one is the name of sandwich 
@@ -130,7 +101,7 @@ void facture(version* ver, int count){
 		
 /* This loop is for finding the price of this sandwich*/
 		for(i = 0; i < 5; i++){
-			if(strcmp(sandwich,price_list[i].name) == 0){
+			if(strstr(sandwich,price_list[i].name) != NULL){
 				cost = price_list[i].euro;
 				break;
 			}
@@ -144,6 +115,7 @@ void facture(version* ver, int count){
  */
 		for(i = 0; i < n; i++){
 			for(j = 0; j < reqs[i].num; j++) {
+				if(reqs[i].require[j] != NULL){
 				if(strstr(reqs[i].require[j],"avec") != NULL || strstr(reqs[i].require[j],"sans") != NULL) {
 					if(strstr(reqs[i].require[j],"mais") != NULL) {
 						printf("  %2d %-25s",reqs[i].cnt,reqs[i].require[j] + 5);
@@ -174,6 +146,7 @@ void facture(version* ver, int count){
 					printf("%.2f\n",cost);
 				}
 				total = total + cost;
+			}
 			}
 		}
 		k++;
@@ -245,18 +218,13 @@ void inventaire(version* ver,int num){
 /* This loop is used for traversing all verions of sandwichs */	
 	m = 0;
 	while( m < num ) {
+		
 		sum = 0;
 		f = 0;
-
-/* This loop is for calculating the total quantity of this version */
 		while(f < ver[m].num){
 			sum = sum + ver[m].types[f].cnt;;
 			f++;
-		}
-		
-/* This loop is for searching which type this version is 
- * the next three loops are for adding the quantity in the final list of ingredients 
- */
+		}		
 		for (i = 0; i < 5; i++) {
 			if(strcmp(ver->type,cook_list[i].name) == 0) {
 				count = material[i];
@@ -275,17 +243,12 @@ void inventaire(version* ver,int num){
 			}
 		}
 	//printf("%d  :  %s\n",m ,ver[m].type);	
-/* This part is for check that if there are "sans" or "avec" 
- * and change the quantity in the list of ingredients 
- */
-		n = ver->num;
+		n = ver[m].num;
 		reqs = malloc(n * sizeof(kind));
-		reqs = ver->types;
-/* This loop is for traversing all types in the current version 
- * the next one is for traversing all requires in each type 
- */
+		reqs = ver[m].types;
 		for(i = 0; i < n; i++) {
 			for(j = 0; j < reqs[i].num; j++) {
+				if(reqs[i].require[j] != NULL){
 				if(strstr(reqs[i].require[j],"sans") != NULL || strstr(reqs[i].require[j],"avec") != NULL) {
 					if(strstr(reqs[i].require[j],"mais") != NULL) {
 						n = (int)sizeof(reqs[i].require[j]) - 10;
@@ -299,9 +262,6 @@ void inventaire(version* ver,int num){
 					}
 					
 					l = 1;
-/* In the next two loops, they are for check the ingredients in require
- * and change its quantity in the list of ingredients 
- */
 					for(r = 0; r < strlen(modingred) - 1; ){
 						for(k = 0; k < 12; k++) {
 							if(modingred[r] == list[k].name[0]) {
@@ -323,6 +283,7 @@ void inventaire(version* ver,int num){
 						}
 						r = r + l; 
 					}
+				}
 				}
 			}
 		}
@@ -405,10 +366,8 @@ void cuisine(version* ver, int count) {
 				//itoa(ver[n].types[i].cnt, tmp, 10);
 				sprintf(tmp,"%d", ver[n].types[i].cnt);
 				strcat(buf2,tmp);
-				if(strcmp(ver[n].types[i].require[0], "") == 0 ) {
-					if(strcmp(ver[n].types[i].require[1], "") == 0){
+				if(ver[n].types[i].require[0] == NULL && ver[n].types[i].require[1] == NULL){
 						strcat(buf2, " normaux");
-					}
 				}
 				else{
 					for(j = 0; j < ver[n].types[i].num; j++) {
