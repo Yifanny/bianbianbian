@@ -70,6 +70,18 @@ TYPE "panini"|"fromage"|"belge"
 	return NUMBER;
 }
 
+[1-9][0-9]*/" sans" {
+	yylval.num = atoi(yytext);
+	printf("id: %s ",yytext);
+	return NUMBER;
+}
+
+[1-9][0-9]*/" avec" {
+	yylval.num = atoi(yytext);
+	printf("id: %s ",yytext);
+	return NUMBER;
+}
+
 "fromage"[s]?|"jambon-beurre"[s]?|"panini"[s]?|"belge"[s]?|"dieppois"[s]? {
 	yylval.word = malloc((yyleng + 1) * sizeof(char));
 	yylval.word = strncpy(yylval.word, yytext, yyleng);
