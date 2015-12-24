@@ -469,8 +469,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    84,    84,    87,   146,   152,   156,   163,   166,   172,
-     175,   181
+       0,    84,    84,    87,   144,   150,   154,   161,   164,   170,
+     173,   179
 };
 #endif
 
@@ -1410,7 +1410,6 @@ yyreduce:
 		    printf("%s, nice choice\n", sandwich[i].type);
 		    printf("start transform\n");
 			order[i] = transform(&sandwich[i].head, sandwich[i].type);
-            order[0].type = strcpy(order[0].type, sandwich[i].type);
     
 		    if (length > 0 && length != sandwich[i].head.left->content.num) {
 			    order[i].num++;
@@ -1431,10 +1430,9 @@ yyreduce:
 		facture(order, count);
         printf("begin inventaire\n");
 		inventaire(order, count);
-    	printf("start combine %d sandwich\n",count);
 		new_ver = combination(order, p);
         printf("creating online form\n");
-		cuisine(order, count);
+		cuisine(new_ver, length);
 		
 		
 		printf("waiting for the new command\n");
@@ -1443,7 +1441,7 @@ yyreduce:
     break;
 
   case 4:
-#line 146 "fastfood.y"
+#line 144 "fastfood.y"
     {
 		printf("require are %s\n", sandwich[count - 1].type);
 		sandwich[count - 1] = add_condition((yyvsp[(1) - (3)].cmd), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
@@ -1453,7 +1451,7 @@ yyreduce:
     break;
 
   case 5:
-#line 152 "fastfood.y"
+#line 150 "fastfood.y"
     {
 		sandwich[count - 1] = add_requirement((yyvsp[(1) - (2)].cmd), (yyvsp[(2) - (2)].point));
 		(yyval.cmd) = &sandwich[count - 1];
@@ -1461,7 +1459,7 @@ yyreduce:
     break;
 
   case 6:
-#line 156 "fastfood.y"
+#line 154 "fastfood.y"
     {
 		(yyval.cmd) = (yyvsp[(1) - (1)].cmd);
 		printf("No %d: order finish\n", count);
@@ -1469,35 +1467,35 @@ yyreduce:
     break;
 
   case 7:
-#line 163 "fastfood.y"
+#line 161 "fastfood.y"
     {
 		(yyval.point) = combine_entities(create_entity((yyvsp[(1) - (4)].num), (yyvsp[(2) - (4)].point)), (yyvsp[(3) - (4)].word), (yyvsp[(4) - (4)].point));
 	}
     break;
 
   case 8:
-#line 166 "fastfood.y"
+#line 164 "fastfood.y"
     {
 		(yyval.point) = create_entity((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].point));
 	}
     break;
 
   case 9:
-#line 172 "fastfood.y"
+#line 170 "fastfood.y"
     {
 		(yyval.point) = create_ingredient((yyvsp[(1) - (2)].word), (yyvsp[(2) - (2)].word));
 	}
     break;
 
   case 10:
-#line 175 "fastfood.y"
+#line 173 "fastfood.y"
     {
 		(yyval.point) = create_ingredients((yyvsp[(1) - (3)].word), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 	}
     break;
 
   case 11:
-#line 181 "fastfood.y"
+#line 179 "fastfood.y"
     {
 		printf("%s\n", (yyvsp[(2) - (2)].word));
 		if (count) {
@@ -1516,7 +1514,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1520 "y.tab.c"
+#line 1518 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1730,7 +1728,7 @@ yyreturn:
 }
 
 
-#line 197 "fastfood.y"
+#line 195 "fastfood.y"
 
 
 
@@ -1909,7 +1907,6 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt) {
 			case 2:
 				ret = check(point->content.word, type);
 				tmp = point->content.word;
-				printf("%s %s %d henji\n", tmp, opr, ret);
 				if (!strcmp(opr, avec) || !strcmp(opr, mais_avec)) {
 					printf("now: %d\n", ret);
 					if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
@@ -2015,7 +2012,6 @@ char** collect_require(node* point, char** res, char* opr) {
 	if (point != NULL) {
 		tmp = point->content.word;
 		if (strstr(tmp, avec) != NULL) {	
-			printf("lalalalalalalala\n");
 			if (res[0] == NULL) {
 				i = strlen(tmp) + strlen(point->left->content.word) + 2;
 				res[0] = malloc(i * sizeof(char));
@@ -2213,7 +2209,6 @@ void facture(version* ver, int count){
 	
 /* This loop is for traversing each sandwich of this list of version*/
 	while(k < count){
-        printf("k: %d \n", k);
  		strcpy(sandwich, ver[k].type);
 		n = ver[k].num;
 		reqs = malloc(n * sizeof(kind));
@@ -2518,7 +2513,6 @@ void cuisine(version* ver, int count) {
 				char tmp[20];
 				sprintf(tmp,"%d", ver[n].types[i].cnt);
 				strcat(buf2,tmp);
-				printf(" lalallalalalal %d\n",ver[n].types[i].cnt);
 				if(ver[n].types[i].require[0] == NULL && ver[n].types[i].require[1] == NULL){
 						strcat(buf2, " normaux");
 				}
@@ -2575,6 +2569,7 @@ version* combine_types(version* ver, int* ls) {
 				tmp = strstr(ver[a].type,ver[b].type);
 			}
 			if(tmp != NULL) {
+                printf("find same type sandwich\n");
 				flag[b] = 1;
 				num = ver[a].num;
 				ver[a].num = ver[a].num + ver[b].num;
@@ -2585,27 +2580,38 @@ version* combine_types(version* ver, int* ls) {
 					m = ver[b].types[c].num;
 					ver[a].types[num+c].require = malloc(m*sizeof(char*));
 					for(d = 0; d < m; d++) {
-						if(strstr(ver[b].types[c].require[0],ver[b].types[c].require[1]) != NULL && m == 0) {
+						if(ver[b].types[c].require[0] != NULL && ver[b].types[c].require[1] != NULL && strlen(ver[b].types[c].require[0]) >= strlen(ver[b].types[c].require[1]) && strstr(ver[b].types[c].require[0],ver[b].types[c].require[1]) != NULL && d == 0) {
+                            printf("wired begin, but who cares\n");
 							len = strlen(ver[b].types[c].require[0]) - strlen(ver[b].types[c].require[1]);
 						}
 						else {
-							len = strlen(ver[b].types[c].require[d]);
+                            if (ver[b].types[c].require[d] != NULL) {
+                                len = strlen(ver[b].types[c].require[d]);
+                            }
+                            else {
+                                len = 0;
+                            }
 						}
-				    	ver[a].types[num+c].require[d] = malloc(len*sizeof(char));
-						strncpy(ver[a].types[num+c].require[d], ver[b].types[c].require[d],len);
-						ver[a].types[num+c].require[d][len] = '\0';
-						printf("combine version %s\n",ver[a].types[num+c].require[d]);
+                        if (len) {
+				    	    ver[a].types[num+c].require[d] = malloc((len + 1) * sizeof(char));
+						    strncpy(ver[a].types[num+c].require[d], ver[b].types[c].require[d],len);
+						    ver[a].types[num+c].require[d][len] = '\0';
+						    printf("combine version %s\n",ver[a].types[num+c].require[d]);
+                        }
+                        else {
+                            ver[a].types[num + c].require[d] = NULL;
+                        }
 					}
 				}
 			}
 		}
 	}
+    printf("finish compare and marking \n");
 	
-	if(ver[0].num > 1){
-		printf(" 1234567   %s\n", ver[0].types[1].require[0]);
-	}
+	//if(ver[0].num > 1){
+//		printf(" 1234567   %s\n", ver[0].types[1].require[0]);
+//	}
 	new_ver = malloc(5 * sizeof(version));
-	printf("lalalalalal\n");
 	for (i = 0, j = 0; i < (*ls); i++) {
 		if(flag[i] == 0) {
 			/*if(j == 0) {
@@ -2622,9 +2628,6 @@ version* combine_types(version* ver, int* ls) {
 			for(k = 0; k < ver[i].num; k++) {
 				new_ver[j].types[k].num = 2;
 				new_ver[j].types[k].cnt = ver[i].types[k].cnt;
-				printf("lalalalalal\n");
-				printf("0 : %s ;\n 1 : %s\n",ver[i].types[k].require[0],ver[i].types[k].require[1]);
-				printf("lalalalalal\n");
 				new_ver[j].types[k].require = malloc(2 * sizeof(char*));
 				if(ver[i].types[k].require[0] != NULL && ver[i].types[k].require[1] != NULL) {
 					if(strstr(ver[i].types[k].require[0],ver[i].types[k].require[1]) != NULL) {
@@ -2637,7 +2640,6 @@ version* combine_types(version* ver, int* ls) {
 					new_ver[j].types[k].require[1] = malloc(strlen(ver[i].types[k].require[1]) * sizeof(char));
 					strncpy(new_ver[j].types[k].require[0], ver[i].types[k].require[0], len);
 					new_ver[j].types[k].require[0][len] = '\0';
-					printf("v %d t %d require0 : %s\n",i,k,ver[i].types[k].require[0]);
 					strcpy(new_ver[j].types[k].require[1], ver[i].types[k].require[1]);
 				}
 				else if(ver[i].types[k].require[0] == NULL && ver[i].types[k].require[1] != NULL) {
@@ -2665,80 +2667,98 @@ version* combine_types(version* ver, int* ls) {
 
 
 version* combination (version* vers, int* num) {
-	char* ingredient[12] = {"pain", "jambon","beurre", "salade", "emmental", 
+	char* ingredients[12] = {"pain", "jambon","beurre", "salade", "emmental", 
 	"ketchup", "moutarde", "mayonnaise", "frites", "tomate", "steak", "thon"};
 	int i, j, k, p, q, m, n, flag, len;
 	version* new_ver;
+
 	version* ver = combine_types(vers, num);
-	printf("num1: %d\n", *num);
-	printf("1   %s\n",ver[0].types[0].require[0]);
 	flag = 1;
 	for(i = 0; i < (*num); i++) {
 		//if(flags[i] == 0){
 		//printf("lalala : %d\n",i);
-		//printf("%s   %d\n",ver[i].type, ver[i].num);
-			for(p = 0; p < ver[i].num - 1; p++) {
-				for(q = p + 1; q < ver[i].num; q++) {
-					printf("2   %s\n",ver[0].types[0].require[0]);
-					printf("qqqqqq %d\n",q);
-					flag = 0;
-					for(n = 0; n < 2; n++) {
-						if(ver[i].types[p].require[n] == NULL && ver[i].types[q].require[n] == NULL) {
-							//flag = 0;
-							continue;
-						}
-						else {
-							for(k = 0; k < 12; k++){
-							//printf("fff %d : %s %d %s\n",k,ver[i].type,flag,ingredient[k]);
-								if(strstr(ver[i].types[p].require[n],ingredient[k]) != NULL) {
-									if(strstr(ver[i].types[q].require[n],ingredient[k]) != NULL) {
-										printf("nnnnn%d %s\n",n,ver[i].types[q].require[n]);
-										//flag = 0;
-										//printf("asdf  %s\n",ingredient[k]);
-									}
-									else {
-										flag = 1;
-										printf("4: %d %d %d   [%s]\n",i,q,n,ver[i].types[q].require[n]);
-										printf("11111111%s\n",ver[i].type);
-										break;
-									}
-								}
-							}
-						}
+		for(p = 0; p < ver[i].num - 1; p++) {
+			for(q = p + 1; q < ver[i].num; q++) {
+				flag = 0;
+				for(n = 0; n < 2; n++) {
+					if(ver[i].types[p].require[n] == NULL && ver[i].types[q].require[n] == NULL) {
+                        continue;
 					}
-					printf("2   %d\n",*num);
-					if(flag == 0) {
-						//printf("nnnnnn %s %s\n",ver[i].type,ver[i].types[p].require[0]);
-						//printf("nnnnnn %s %s\n",ver[i].type,ver[i].types[p].require[1]);
-						
-						ver[i].types[p].cnt = ver[i].types[q].cnt + ver[i].types[p].cnt;
-						printf("3   %d\n",*num);
-						for(j = q + 1; j < ver[i].num; j++) {
-							for(m = 0; m < 2; m++) {
-								printf("6   %d\n",*num);
-								//printf("len : %lu\n",strlen(ver[i].types[j].require[m]));
-								if(strstr(ver[i].types[j].require[0],ver[i].types[j].require[1]) != NULL && m == 0) {
-									len = strlen(ver[i].types[j].require[0]) - strlen(ver[i].types[j].require[1]);
+					else {
+                        if (ver[i].types[p].require[n] == NULL && ver[i].types[q].require[n] == NULL) {
+                            continue;
+                        }
+                        if ((ver[i].types[p].require[n] == NULL && ver[i].types[q].require[n] != NULL) || (ver[i].types[p].require[n] != NULL && ver[i].types[q].require[n] == NULL)) {
+                            flag = 1;
+                            break;
+                        }
+						for(k = 0; k < 12; k++){
+						//printf("fff %d : %s %d %s\n",k,ver[i].type,flag,ingredients[k]);
+							if(strlen(ver[i].types[p].require[n]) >= strlen(ingredients[k]) && strstr(ver[i].types[p].require[n],ingredients[k]) != NULL) {
+								if(strlen(ver[i].types[q].require[n]) >= strlen(ingredients[k]) && strstr(ver[i].types[q].require[n],ingredients[k]) != NULL) {
+									printf("n: %d same require: %s\n",n,ver[i].types[q].require[n]);
 								}
 								else {
-									len = strlen(ver[i].types[j].require[m]);
+									flag = 1;
+									break;
 								}
-								ver[i].types[j-1].require[m] = strncpy(ver[i].types[j-1].require[m],ver[i].types[j].require[m],len);
-								ver[i].types[j-1].require[m][len] = '\0';
-								printf("3   %s\n",ver[i].types[j-1].require[m]);
 							}
-							printf("4   %d\n",*num);
-							ver[i].types[j-1].cnt = ver[i].types[j].cnt;
-							printf("4--   %d\n",*num);
+                            else {
+								if(strlen(ver[i].types[q].require[n]) >= strlen(ingredients[k]) && strstr(ver[i].types[q].require[n],ingredients[k]) != NULL) {
+									flag = 1;
+									break;
+								}
+								else {
+								}
+                            }
 						}
-						ver[i].num = ver[i].num - 1;
-						q--;
 					}
 				}
-				printf("5   %d\n",*num);
+				if(flag == 0) {
+					//printf("nnnnnn %s %s\n",ver[i].type,ver[i].types[p].require[0]);
+					//printf("nnnnnn %s %s\n",ver[i].type,ver[i].types[p].require[1]);
+					
+					ver[i].types[p].cnt = ver[i].types[q].cnt + ver[i].types[p].cnt;
+					for(j = q + 1; j < ver[i].num; j++) {
+						for(m = 0; m < 2; m++) {
+							//printf("len : %lu\n",strlen(ver[i].types[j].require[m]));
+							if(ver[i].types[j].require[0] != NULL && ver[i].types[j].require[1] != NULL && strlen(ver[i].types[j].require[0]) >= strlen(ver[i].types[j].require[1]) &&strstr(ver[i].types[j].require[0],ver[i].types[j].require[1]) != NULL && m == 0) {
+								len = strlen(ver[i].types[j].require[0]) - strlen(ver[i].types[j].require[1]);
+							}
+							else {
+                                if (ver[i].types[j].require[m] != NULL) {
+								    len = strlen(ver[i].types[j].require[m]);
+                                }
+                                else {
+                                    len = 0;
+                                }
+							}
+                            if (len) {
+                                if (ver[i].types[j - 1].require[m] != NULL) {
+							        ver[i].types[j-1].require[m] = realloc(ver[i].types[j - 1].require[m], (len + 1) * sizeof(char));
+                                    ver[i].types[j - 1].require[m] = strncpy(ver[i].types[j-1].require[m],ver[i].types[j].require[m],len);
+							        ver[i].types[j-1].require[m][len] = '\0';
+                                }
+                                else {
+							        ver[i].types[j-1].require[m] = malloc((len + 1) * sizeof(char));
+                                    ver[i].types[j - 1].require[m] = strncpy(ver[i].types[j-1].require[m],ver[i].types[j].require[m],len);
+							        ver[i].types[j-1].require[m][len] = '\0';
+
+                                }
+                            }
+                            else {
+                                ver[i].types[j - 1].require[m] = NULL;
+                            }
+						}
+						ver[i].types[j-1].cnt = ver[i].types[j].cnt;
+					}
+					ver[i].num = ver[i].num - 1;
+					q--;
+				}
 			}
-		//}
+		}
 	}
+    printf("transfer the result\n");
 	new_ver = malloc((*num) * sizeof(version));
 	for(i = 0; i < (*num); i++) {
 		new_ver[i] = ver[i];
