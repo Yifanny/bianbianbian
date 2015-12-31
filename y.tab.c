@@ -1835,14 +1835,20 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	return p; 
 }
 
- commandes add_requirement(commandes* cmd, node* req) {
+// Usage: Adding all the special requirments to the head node
+// Enter: Command and the requirments tree's head node
+// Return: Final command
+commandes add_requirement(commandes* cmd, node* req) {
 	 cmd->head.right = req;
 	 
 	 return *cmd;
 	 
  }
- 
- commandes add_condition(commandes* cmd, char* spl, node* cons) {
+
+// Usage: Adding new conditions with for the sandwich
+// Enter: Command with the split word and the head of the condition
+// Return: Final command
+commandes add_condition(commandes* cmd, char* spl, node* cons) {
 	 cmd->head.content.word = spl;
 	 cmd->head.right = cons;
 	 cmd->head.typenode = 0;
@@ -1863,6 +1869,7 @@ node* combine_entities(node* ent1, char* spl, node* ent2) {
 	 	nshow(point->right);
 	 }
  }
+
 // Usage: Check whether a ingredient is in the sandwich
 // Enter: Name of the ingredient and the type of the sandwich
 // Return: 1 means exist, 0 means not exist 
@@ -2006,6 +2013,9 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt) {
 }
 
 
+// Usage: Collect the require and form an arry of the requires
+// Enter: Head node of the requirment, result pointer, operation sign
+// Return: result pointer
 char** collect_require(node* point, char** res, char* opr) {
 	int i, j;
 	printf("%s  \n", opr);
@@ -2071,6 +2081,9 @@ char** collect_require(node* point, char** res, char* opr) {
 	
 } 
 
+// Usage: Combine all the infos for one type of sandwich
+// Enter: This type sandwich head node
+// Return: This type of sandwich
 kind* make_kind(node* head) {
 	kind* res;
 	char** result = malloc(2 * sizeof(char*));
@@ -2089,6 +2102,9 @@ kind* make_kind(node* head) {
 	return res;
 }
 
+// Usage: Collect all types of the sandwich 
+// Enter: Command tree head node, result pointer
+// Return: Result pointer
 kind* collect_kind(node* point, kind* res) {
 	kind* ans;
 	if (point->typenode == 4) {
@@ -2106,6 +2122,9 @@ kind* collect_kind(node* point, kind* res) {
 	return res;
 }
 
+// Usage: Transform commands into the structre can be used in the caculating part
+// Enter: Command tree head node, name of sandwich
+// Return: Final data structre
 version transform(node* head, char* type) {
 	version res;
 	ret = 0;
@@ -2546,6 +2565,9 @@ void cuisine(version* ver, int count) {
 }
 
 
+// Usage: Combine the sandwich whose name are the same
+// Enter: Sandwich array, number of the command
+// Return: Array after the combination
 version* combine_types(version* ver, int* ls) {
 	int a, b, c, d, num, m;
 	int n = 0;
@@ -2608,9 +2630,6 @@ version* combine_types(version* ver, int* ls) {
 	}
     printf("finish compare and marking \n");
 	
-	//if(ver[0].num > 1){
-//		printf(" 1234567   %s\n", ver[0].types[1].require[0]);
-//	}
 	new_ver = malloc(5 * sizeof(version));
 	for (i = 0, j = 0; i < (*ls); i++) {
 		if(flag[i] == 0) {
@@ -2666,6 +2685,9 @@ version* combine_types(version* ver, int* ls) {
 }
 
 
+// Usage: Combine the sandwich which are semantically the same
+// Enter: Sandwich array, number of the sandwich
+// Return: Array after the combination
 version* combination (version* vers, int* num) {
 	char* ingredients[12] = {"pain", "jambon","beurre", "salade", "emmental", 
 	"ketchup", "moutarde", "mayonnaise", "frites", "tomate", "steak", "thon"};
