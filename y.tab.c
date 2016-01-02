@@ -469,8 +469,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    84,    84,    87,   144,   150,   154,   161,   164,   170,
-     173,   179
+       0,    84,    84,    87,   127,   132,   136,   142,   145,   151,
+     154,   160
 };
 #endif
 
@@ -1401,14 +1401,12 @@ yyreduce:
 			    is_meat = 1;
 			    ret = verifie_commandes(&sandwich[i].head, sandwich[i].type, NULL, 2 * sandwich[i].head.left->content.num);
 		    }
-		    printf("verifie_result: %d\n", ret);
 		    if (ret < 0 || is_meat > 1) {
 			    yyerror("error input\n");
 			    return 1;
 		    }
 		    length = ret;
 		    printf("%s, nice choice\n", sandwich[i].type);
-		    printf("start transform\n");
 			order[i] = transform(&sandwich[i].head, sandwich[i].type);
     
 		    if (length > 0 && length != sandwich[i].head.left->content.num) {
@@ -1420,30 +1418,14 @@ yyreduce:
 			    order[i].types[order[i].num - 1].num = 2;
 			    order[i].types[order[i].num - 1].cnt = length;
 		    } 
-		    printf("finish transform\n");
 		}
 		
-		
-		length = count;
-		p = &length;
-        printf("printing facture\n");
-		facture(order, count);
-        printf("begin inventaire\n");
-		inventaire(order, count);
-		new_ver = combination(order, p);
-        printf("creating online form\n");
-		cuisine(new_ver, length);
-		
-		
-		printf("waiting for the new command\n");
-
 	}
     break;
 
   case 4:
-#line 144 "fastfood.y"
+#line 127 "fastfood.y"
     {
-		printf("require are %s\n", sandwich[count - 1].type);
 		sandwich[count - 1] = add_condition((yyvsp[(1) - (3)].cmd), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 		
 		(yyval.cmd) = &sandwich[count - 1];
@@ -1451,7 +1433,7 @@ yyreduce:
     break;
 
   case 5:
-#line 150 "fastfood.y"
+#line 132 "fastfood.y"
     {
 		sandwich[count - 1] = add_requirement((yyvsp[(1) - (2)].cmd), (yyvsp[(2) - (2)].point));
 		(yyval.cmd) = &sandwich[count - 1];
@@ -1459,45 +1441,43 @@ yyreduce:
     break;
 
   case 6:
-#line 154 "fastfood.y"
+#line 136 "fastfood.y"
     {
 		(yyval.cmd) = (yyvsp[(1) - (1)].cmd);
-		printf("No %d: order finish\n", count);
 	}
     break;
 
   case 7:
-#line 161 "fastfood.y"
+#line 142 "fastfood.y"
     {
 		(yyval.point) = combine_entities(create_entity((yyvsp[(1) - (4)].num), (yyvsp[(2) - (4)].point)), (yyvsp[(3) - (4)].word), (yyvsp[(4) - (4)].point));
 	}
     break;
 
   case 8:
-#line 164 "fastfood.y"
+#line 145 "fastfood.y"
     {
 		(yyval.point) = create_entity((yyvsp[(1) - (2)].num), (yyvsp[(2) - (2)].point));
 	}
     break;
 
   case 9:
-#line 170 "fastfood.y"
+#line 151 "fastfood.y"
     {
 		(yyval.point) = create_ingredient((yyvsp[(1) - (2)].word), (yyvsp[(2) - (2)].word));
 	}
     break;
 
   case 10:
-#line 173 "fastfood.y"
+#line 154 "fastfood.y"
     {
 		(yyval.point) = create_ingredients((yyvsp[(1) - (3)].word), (yyvsp[(2) - (3)].word), (yyvsp[(3) - (3)].point));
 	}
     break;
 
   case 11:
-#line 179 "fastfood.y"
+#line 160 "fastfood.y"
     {
-		printf("%s\n", (yyvsp[(2) - (2)].word));
 		if (count) {
 			sandwich = realloc(sandwich, (count + 1) * sizeof(commandes));
 		}
@@ -1514,7 +1494,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1518 "y.tab.c"
+#line 1498 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1728,7 +1708,7 @@ yyreturn:
 }
 
 
-#line 195 "fastfood.y"
+#line 175 "fastfood.y"
 
 
 
@@ -1915,7 +1895,6 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt) {
 				ret = check(point->content.word, type);
 				tmp = point->content.word;
 				if (!strcmp(opr, avec) || !strcmp(opr, mais_avec)) {
-					printf("now: %d\n", ret);
 					if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
 						is_meat++;
 					}
@@ -2132,7 +2111,6 @@ version transform(node* head, char* type) {
 	res.type = malloc(strlen(type) * sizeof(char));
     res.type = strcpy(res.type, type);
 	res.types = collect_kind(head, res.types);
-	printf("finish collect\n");
 	res.num = ret;
 	return res;
 }
@@ -2184,6 +2162,9 @@ cook* init(){
 	for(i = 0; i < sizeof(cook_dieppois); i++){
 		cook_list[4].material[i] = cook_dieppois[i];
 	}
+    is_facture= 0;
+    is_inventaire = 0;
+    is_cuisine = 0;
 	return cook_list;
 }
 
@@ -2195,13 +2176,11 @@ cook* init(){
 float search(char* sandwich, char* ingredient) {
 	float m;
 	int i, j, k;
-	cook* cook_list;
-	cook_list = init();
 	for(i = 0; i < 5; i++) {
-		if(strcmp(sandwich,cook_list[i].name) == 0) {
+		if(strcmp(sandwich,menu[i].name) == 0) {
 			for(j = 0; j < material[i]; j++) {
-				if(strcmp(ingredient,cook_list[i].material[j].name) == 0) {
-					m = cook_list[i].material[j].num;
+				if(strcmp(ingredient,menu[i].material[j].name) == 0) {
+					m = menu[i].material[j].num;
 					break;
 				}
 			}
@@ -2216,8 +2195,6 @@ float search(char* sandwich, char* ingredient) {
  * the other is the number of versions 
  */
 void facture(version* ver, int count){
-	cook* cook_list;
-	cook_list = init();
 	float total = 0.0;
 	int k = 0;
 	int ndh, net, ni, r, n;
@@ -2226,7 +2203,7 @@ void facture(version* ver, int count){
 	kind* reqs;
 	char sandwich[20];
 	
-/* This loop is for traversing each sandwich of this list of version*/
+    /* This loop is for traversing each sandwich of this list of version*/
 	while(k < count){
  		strcpy(sandwich, ver[k].type);
 		n = ver[k].num;
@@ -2237,7 +2214,7 @@ void facture(version* ver, int count){
 		}
 		printf("%2d %-26s", sum, sandwich);
 	
-/* This loop is for finding the price of this sandwich*/
+        /* This loop is for finding the price of this sandwich*/
 		for(i = 0; i < 5; i++){
 			if(strstr(sandwich,price_list[i].name) != NULL){
 				cost = price_list[i].euro;
@@ -2248,9 +2225,9 @@ void facture(version* ver, int count){
 		total = total + cost * sum;
 		cost = 0.0;
 		
-/* This loop is in order to traversing all types of this version 
- * the next loop in this loop is for traversing each require in one type 
- */
+        /* This loop is in order to traversing all types of this version 
+        * the next loop in this loop is for traversing each require in one type 
+        */
 		for(i = 0; i < n; i++){
 			for(j = 0; j < reqs[i].num; j++) {
 			if(reqs[i].require[j] != NULL){
@@ -2264,7 +2241,7 @@ void facture(version* ver, int count){
 					cost = 0.5 * reqs[i].cnt;
 					ndh = net = ni = 0;
 
-/* This loop is for searching ',' or 'et' or 'ni' in the current require */
+                    /* This loop is for searching ',' or 'et' or 'ni' in the current require */
 					for(r = 0; r < strlen(reqs[i].require[j])-2; r++){
 						if(reqs[i].require[j][r] == ','){
 							ndh = ndh + 1;
@@ -2299,8 +2276,6 @@ void facture(version* ver, int count){
  * it prints a list of neccessary ingredients for this list of versions 
  */
 void inventaire(version* ver,int num){			
-	cook* cook_list;
-	cook_list = init();
 	ingredient* cur;
 	char* modingred;
 	int m, f;
@@ -2340,7 +2315,7 @@ void inventaire(version* ver,int num){
 	};
 	
 
-/* This array is definited to store the number of ingredients for each sandwich*/	
+   /* This array is definited to store the number of ingredients for each sandwich*/	
 	int material[5] = {3, 4, 5, 5, 4};
 	char** sandwich;
 	sandwich = malloc(5 * sizeof(char*));
@@ -2354,10 +2329,9 @@ void inventaire(version* ver,int num){
 	sandwich[4] = "deippois";
 	
 	
-/* This loop is used for traversing all verions of sandwichs */	
+    /* This loop is used for traversing all verions of sandwichs */	
 	m = 0;
 	while( m < num ) {
-	printf("%d 1 panini sans jambon mais avec steak\n",m);
 		sum = 0;
 		f = 0;
 		/* This loop is for calculating the total quantity of this version */
@@ -2366,42 +2340,38 @@ void inventaire(version* ver,int num){
 			f++;
 		}
 		
-/* This loop is for searching which type this version is 
- * the next three loops are for adding the quantity in the final list of ingredients 
- */
+        /* This loop is for searching which type this version is 
+        * the next three loops are for adding the quantity in the final list of ingredients 
+        */
 		for (i = 0; i < 5; i++) {
-			if(strstr(ver[m].type,cook_list[i].name) != NULL) {
+			if(strstr(ver[m].type,menu[i].name) != NULL) {
 				count = material[i];
 				cur = malloc(count * sizeof(ingredient));
 				for(r = 0; r < count; r++){
-					cur[r] = cook_list[i].material[r];
+					cur[r] = menu[i].material[r];
 				}
 				for(j = 0; j < material[i]; j++){
 					for(k = 0; k < 12; k++) {
-						if(strcmp(list[k].name,cook_list[i].material[j].name) == 0){
-							list[k].num = list[k].num + sum * cook_list[i].material[j].num;
+						if(strcmp(list[k].name,menu[i].material[j].name) == 0){
+							list[k].num = list[k].num + sum * menu[i].material[j].num;
 						}
 					}	
 				}
 				break;
 			}
 		}
-	//printf("%d  :  %s\n",m ,ver[m].type);	
-/* This part is for check that if there are "sans" or "avec" 
- * and change the quantity in the list of ingredients 
- */
+        /* This part is for check that if there are "sans" or "avec" 
+        * and change the quantity in the list of ingredients 
+        */
 		n = ver[m].num;
-		//printf("nnnnnnnnnnn  %d\n",n);
 		reqs = malloc(n * sizeof(kind));
 		reqs = ver[m].types;
 		for(z = 0; z < n; z++) {
 			reqs[z].num = 2;
 		}
-/* This loop is for traversing all types in the current version 
- * the next one is for traversing all requires in each type 
- */
- //printf("%d reqs2\n",reqs[0].num);
- //printf("%d  : types %s\n",n ,ver[m].type);
+        /* This loop is for traversing all types in the current version 
+        * the next one is for traversing all requires in each type 
+        */
 		for(i = 0; i < n; i++) {
 		//printf(" i de zhi %d\n",i);
 		//printf("require : %d\n",reqs[i].num);
@@ -2418,7 +2388,6 @@ void inventaire(version* ver,int num){
 						modingred = malloc(len * sizeof(char));
 						modingred = reqs[i].require[j] + 5;	
 					}
-					//printf("1 panini sans jambon mais avec steak\n");
 					
 					l = 1;
 /* In the next two loops, they are for check the ingredients in require
@@ -2449,7 +2418,6 @@ void inventaire(version* ver,int num){
 				}
 				}
 			}
-			//printf("iiiiiiiiii  %d\n",i);
 		}
 		m++;
 	}
@@ -2473,34 +2441,6 @@ void cuisine(version* ver, int count) {
 	for(i = 0; i < count; i++) {
 		flag[i] = 0;
 	}
-	
-/* This part is for combination of the same version in the list of version */	
-	/*for(a = 0; a < count; a++) {
-		for(b = a + 1; b < count; b++) {
-			if(strcmp(ver[a].type,ver[b].type) == 0) {
-				flag[b] = 1;
-				num = ver[a].num;
-				ver[a].num = ver[a].num + ver[b].num;
-				ver[a].types = realloc(ver[a].types, ver[a].num * sizeof(kind));
-				for(c = 0; c < ver[b].num; c++) {
-					ver[a].types[num+c].cnt = ver[b].types[c].cnt;
-					ver[a].types[num+c].num = ver[b].types[c].num;
-					m = ver[b].types[c].num;
-					ver[a].types[num+c].require = malloc(m*sizeof(char*));
-					for(d = 0; d < m; d++) {
-						if(ver[b].types[c].require[d] != NULL){
-							int len = strlen(ver[b].types[c].require[d]);
-				    		ver[a].types[num+c].require[d] = malloc(len * sizeof(char));
-							strcpy(ver[a].types[num+c].require[d], ver[b].types[c].require[d]);
-						}
-					}
-					//printf("a%d num+c%d require0 : %s\n",a,num+c,ver[a].types[num+c].require[0]);
-					//printf("a%d num+c%d require1 : %s\n",a,num+c,ver[a].types[num+c].require[1]);
-				}
-			}
-		}
-	}
-*/
 
 /* open the file cuisine.html, if there isn't this file, create one */	
 	if((stream = open("cuisine.html", O_RDWR|O_TRUNC|O_CREAT, S_IRWXU)) == -1) {
@@ -2591,7 +2531,6 @@ version* combine_types(version* ver, int* ls) {
 				tmp = strstr(ver[a].type,ver[b].type);
 			}
 			if(tmp != NULL) {
-                printf("find same type sandwich\n");
 				flag[b] = 1;
 				num = ver[a].num;
 				ver[a].num = ver[a].num + ver[b].num;
@@ -2618,7 +2557,6 @@ version* combine_types(version* ver, int* ls) {
 				    	    ver[a].types[num+c].require[d] = malloc((len + 1) * sizeof(char));
 						    strncpy(ver[a].types[num+c].require[d], ver[b].types[c].require[d],len);
 						    ver[a].types[num+c].require[d][len] = '\0';
-						    printf("combine version %s\n",ver[a].types[num+c].require[d]);
                         }
                         else {
                             ver[a].types[num + c].require[d] = NULL;
@@ -2628,7 +2566,6 @@ version* combine_types(version* ver, int* ls) {
 			}
 		}
 	}
-    printf("finish compare and marking \n");
 	
 	new_ver = malloc(5 * sizeof(version));
 	for (i = 0, j = 0; i < (*ls); i++) {
@@ -2718,7 +2655,6 @@ version* combination (version* vers, int* num) {
 						//printf("fff %d : %s %d %s\n",k,ver[i].type,flag,ingredients[k]);
 							if(strlen(ver[i].types[p].require[n]) >= strlen(ingredients[k]) && strstr(ver[i].types[p].require[n],ingredients[k]) != NULL) {
 								if(strlen(ver[i].types[q].require[n]) >= strlen(ingredients[k]) && strstr(ver[i].types[q].require[n],ingredients[k]) != NULL) {
-									printf("n: %d same require: %s\n",n,ver[i].types[q].require[n]);
 								}
 								else {
 									flag = 1;
@@ -2780,7 +2716,6 @@ version* combination (version* vers, int* num) {
 			}
 		}
 	}
-    printf("transfer the result\n");
 	new_ver = malloc((*num) * sizeof(version));
 	for(i = 0; i < (*num); i++) {
 		new_ver[i] = ver[i];
@@ -2793,9 +2728,47 @@ void yyerror(char* s) {
 		
 }
 
-int main() {
+int main(int args, char** argv) {
+    int i;
 	menu = init();
+    if (args == 1) {
+        printf("Program need at least one of three parameters: \n\t1, --facture \n\t2, --inventaire \n\t3, --cuisine\n");
+        return 1;
+    }
+    
+    for (i = 1; i < args; i++) {
+        if (!strcmp(argv[i], "--facture")) {
+            is_facture = 1;
+        }
+        else if (!strcmp(argv[i], "--inventaire")) {
+            is_inventaire = 1;
+        }
+        else if (!strcmp(argv[i], "--cuisine")) {
+            is_cuisine = 1;
+        }
+        else {
+            printf("invalid parameter: %s\n", argv[i]);
+            printf("Program need at least one of three parameters: \n\t1, --facture \n\t2, --inventaire \n\t3, --cuisine\n");
+            return 1;
+        }
+    }
 	yyparse();
+
+	length = count;
+	p = &length;
+    if (is_facture) {
+        printf("printing facture\n");
+	    facture(order, count);
+    }
+    if (is_inventaire) {
+        printf("begin inventaire\n");
+        inventaire(order, count);
+    }
+    if (is_cuisine) {
+	    new_ver = combination(order, p);
+        printf("creating online form\n");
+        cuisine(new_ver, length);
+    }
 	return 0;
 }
 
