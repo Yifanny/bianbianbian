@@ -86,7 +86,6 @@ program: {
 	}
 	| program condition NEW {		
 		//nshow(&sandwich[count - 1].head);
-		//printf("henji\n");
         if (order != NULL) {
             free(order);
         }
@@ -101,12 +100,21 @@ program: {
 			    is_meat = 1;
 			    ret = verifie_commandes(&sandwich[i].head, sandwich[i].type, NULL, 2 * sandwich[i].head.left->content.num);
 		    }
+<<<<<<< HEAD
+=======
+		    //printf("verifie_result: %d\n", ret);
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 		    if (ret < 0 || is_meat > 1) {
 			    yyerror("error input\n");
 			    return 1;
 		    }
 		    length = ret;
+<<<<<<< HEAD
 		    printf("%s, nice choice\n", sandwich[i].type);
+=======
+		    //printf("%s, nice choice\n", sandwich[i].type);
+		    //printf("start transform\n");
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 			order[i] = transform(&sandwich[i].head, sandwich[i].type);
     
 		    if (length > 0 && length != sandwich[i].head.left->content.num) {
@@ -118,13 +126,37 @@ program: {
 			    order[i].types[order[i].num - 1].num = 2;
 			    order[i].types[order[i].num - 1].cnt = length;
 		    } 
+<<<<<<< HEAD
 		}
 		
+=======
+		    //printf("finish transform\n");
+		}
+		
+		
+		length = count;
+		p = &length;
+        printf("printing facture\n");
+		facture(order, count);
+        printf("begin inventaire\n");
+		inventaire(order, count);
+		new_ver = combination(order, p);
+        //printf("creating online form\n");
+		cuisine(new_ver, length);
+		
+		
+		printf("waiting for the new command\n");
+
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 	}
 ;
 		
 condition:
 	simple SPLITE expr {
+<<<<<<< HEAD
+=======
+		//printf("require are %s\n", sandwich[count - 1].type);
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 		sandwich[count - 1] = add_condition($1, $2, $3);
 		
 		$$ = &sandwich[count - 1];
@@ -135,6 +167,10 @@ condition:
 	}
 	| simple {
 		$$ = $1;
+<<<<<<< HEAD
+=======
+		//printf("No %d: order finish\n", count);
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 	}
 ;
 
@@ -158,6 +194,10 @@ taste:
 
 simple:
 	NUMBER TYPE {
+<<<<<<< HEAD
+=======
+		//printf("%s\n", $2);
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 		if (count) {
 			sandwich = realloc(sandwich, (count + 1) * sizeof(commandes));
 		}
@@ -166,7 +206,7 @@ simple:
 		}
 			
 		sandwich[count++] = create_commande($1, $2);
-		printf("%s commande taken!\n", sandwich[count - 1].type);
+		//printf("%s commande taken!\n", sandwich[count - 1].type);
 		$$ = &sandwich[count - 1];
 		
 	}
@@ -183,7 +223,7 @@ simple:
 // Return: Command structure
 commandes create_commande(int num, char* type) {
 	commandes cmd;
-	printf("creating %s \n", type);
+	//printf("creating %s \n", type);
 	cmd.type = type;
 	cmd.head.typenode = 4;
 	cmd.head.content.word = NULL;
@@ -302,7 +342,7 @@ commandes add_condition(commandes* cmd, char* spl, node* cons) {
  void nshow(node* point) {
 	if (point != NULL) {
 		if (point->typenode == 1) {
-					printf("number: %d\n", point->content.num);
+			printf("number: %d\n", point->content.num);
 		}
 		else if (point->content.word != NULL) {
 			printf("%s\n", point->content.word);
@@ -358,6 +398,10 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt) {
 				ret = check(point->content.word, type);
 				tmp = point->content.word;
 				if (!strcmp(opr, avec) || !strcmp(opr, mais_avec)) {
+<<<<<<< HEAD
+=======
+					//printf("now: %d\n", ret);
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 					if (!strcmp(tmp, steak) || !strcmp(tmp, thon) || !strcmp(tmp, jambon)) {
 						is_meat++;
 					}
@@ -460,7 +504,7 @@ int verifie_commandes(node* point, char* type, char* opr, int cnt) {
 // Return: result pointer
 char** collect_require(node* point, char** res, char* opr) {
 	int i, j;
-	printf("%s  \n", opr);
+	//printf("%s  \n", opr);
 	if (point != NULL) {
 		tmp = point->content.word;
 		if (strstr(tmp, avec) != NULL) {	
@@ -574,6 +618,10 @@ version transform(node* head, char* type) {
 	res.type = malloc(strlen(type) * sizeof(char));
     res.type = strcpy(res.type, type);
 	res.types = collect_kind(head, res.types);
+<<<<<<< HEAD
+=======
+	//printf("finish collect\n");
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 	res.num = ret;
 	return res;
 }
@@ -582,7 +630,6 @@ version transform(node* head, char* type) {
 void pshow(version* vlist) {
 	int i, j, k;
 	
-	//printf("%d: %s lalalala\n", vlist[0].types[0].cnt, vlist[0].types[0].require[0]);
 	for (i = 0; i < count; i++) {
 		printf("type is : %s\n", vlist[i].type);
 		for (j = 0; j < vlist[i].num; j++ ) {
@@ -904,7 +951,11 @@ void cuisine(version* ver, int count) {
 	for(i = 0; i < count; i++) {
 		flag[i] = 0;
 	}
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 /* open the file cuisine.html, if there isn't this file, create one */	
 	if((stream = open("cuisine.html", O_RDWR|O_TRUNC|O_CREAT, S_IRWXU)) == -1) {
 		printf("create fail:%s\n",strerror(errno));
@@ -940,7 +991,6 @@ void cuisine(version* ver, int count) {
 				}
 				else{
 					for(j = 0; j < ver[n].types[i].num; j++) {
-						//printf("%s  %s\n",ver[n].type,ver[n].types[i].require[j]);
 						strcat(buf2," ");
 						if(ver[n].types[i].require[j] != NULL){
 							strcat(buf2,ver[n].types[i].require[j]);
@@ -979,7 +1029,6 @@ version* combine_types(version* ver, int* ls) {
 	char* tmp;
 	version* new_ver;
 	
-	//printf("bbbbbb\n");
 	flag = malloc((*ls) * sizeof(int));
 	for(i = 0; i < (*ls); i++) {
 		flag[i] = 0;
@@ -1033,13 +1082,6 @@ version* combine_types(version* ver, int* ls) {
 	new_ver = malloc(5 * sizeof(version));
 	for (i = 0, j = 0; i < (*ls); i++) {
 		if(flag[i] == 0) {
-			/*if(j == 0) {
-				new_ver = malloc(sizeof(version));
-			}
-			else {
-				new_ver = realloc(new_ver, (j + 1) * sizeof(version));
-			}*/
-			
 			new_ver[j].type = malloc(strlen(ver[i].type) * sizeof(char));
 			strcpy(new_ver[j].type, ver[i].type);
 			new_ver[j].num = ver[i].num;
@@ -1097,8 +1139,6 @@ version* combination (version* vers, int* num) {
 	version* ver = combine_types(vers, num);
 	flag = 1;
 	for(i = 0; i < (*num); i++) {
-		//if(flags[i] == 0){
-		//printf("lalala : %d\n",i);
 		for(p = 0; p < ver[i].num - 1; p++) {
 			for(q = p + 1; q < ver[i].num; q++) {
 				flag = 0;
@@ -1115,7 +1155,6 @@ version* combination (version* vers, int* num) {
                             break;
                         }
 						for(k = 0; k < 12; k++){
-						//printf("fff %d : %s %d %s\n",k,ver[i].type,flag,ingredients[k]);
 							if(strlen(ver[i].types[p].require[n]) >= strlen(ingredients[k]) && strstr(ver[i].types[p].require[n],ingredients[k]) != NULL) {
 								if(strlen(ver[i].types[q].require[n]) >= strlen(ingredients[k]) && strstr(ver[i].types[q].require[n],ingredients[k]) != NULL) {
 								}
@@ -1136,13 +1175,9 @@ version* combination (version* vers, int* num) {
 					}
 				}
 				if(flag == 0) {
-					//printf("nnnnnn %s %s\n",ver[i].type,ver[i].types[p].require[0]);
-					//printf("nnnnnn %s %s\n",ver[i].type,ver[i].types[p].require[1]);
-					
 					ver[i].types[p].cnt = ver[i].types[q].cnt + ver[i].types[p].cnt;
 					for(j = q + 1; j < ver[i].num; j++) {
 						for(m = 0; m < 2; m++) {
-							//printf("len : %lu\n",strlen(ver[i].types[j].require[m]));
 							if(ver[i].types[j].require[0] != NULL && ver[i].types[j].require[1] != NULL && strlen(ver[i].types[j].require[0]) >= strlen(ver[i].types[j].require[1]) &&strstr(ver[i].types[j].require[0],ver[i].types[j].require[1]) != NULL && m == 0) {
 								len = strlen(ver[i].types[j].require[0]) - strlen(ver[i].types[j].require[1]);
 							}
@@ -1179,6 +1214,10 @@ version* combination (version* vers, int* num) {
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+    //printf("transfer the result\n");
+>>>>>>> 5902da28f0114efbee6cff1b1d8548fdfc68ac47
 	new_ver = malloc((*num) * sizeof(version));
 	for(i = 0; i < (*num); i++) {
 		new_ver[i] = ver[i];
